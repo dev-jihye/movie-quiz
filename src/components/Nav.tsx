@@ -1,30 +1,47 @@
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ROUTE } from "../constance";
+import useUser from "../hooks/useUser";
+import { logUserOut } from "../apollo";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Nav() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { data, loading } = useUser();
+
+  const headerNavs = [
+    {
+      name: "모두의 퀴즈",
+      to: ROUTE.HOME,
+      current: location.pathname === ROUTE.HOME,
+    },
+    { name: "퀴즈 모음", to: "#", current: location.pathname === "#" },
+  ];
+
+  const userNavs = [{ name: "내 프로필", to: "#" }];
+
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
         <>
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
             <div className="flex justify-between h-16">
               <div className="flex">
-                <div className="flex-shrink-0 flex items-center">
+                <div className="flex items-center flex-shrink-0">
                   <Link to={ROUTE.HOME}>
                     <img
-                      className="block lg:hidden h-8 w-auto"
+                      className="block w-auto h-8 lg:hidden"
                       src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
                       alt="Workflow"
                     />
                     <img
-                      className="hidden lg:block h-8 w-auto"
+                      className="hidden w-auto h-8 lg:block"
                       src="https://tailwindui.com/img/logos/workflow-logo-indigo-600-mark-gray-800-text.svg"
                       alt="Workflow"
                     />
@@ -32,38 +49,42 @@ export default function Nav() {
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                   {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
-                  <Link
-                    to={ROUTE.HOME}
-                    className="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                  >
-                    모두의 퀴즈
-                  </Link>
-                  <a
-                    href="#"
-                    className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                  >
-                    퀴즈 모음
-                  </a>
+                  {headerNavs.map((nav, index) => (
+                    <Link
+                      key={index}
+                      to={nav.to}
+                      className={`${
+                        nav.current ? "border-indigo-500" : "border-transparent"
+                      } inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 hover:border-gray-300 hover:text-gray-700`}
+                    >
+                      {nav.name}
+                    </Link>
+                  ))}
                 </div>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:items-center">
                 <button
                   type="button"
-                  className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="p-1 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
+                  <BellIcon className="w-6 h-6" aria-hidden="true" />
                 </button>
 
                 {/* Profile dropdown */}
-                <Menu as="div" className="ml-3 relative">
+                <Menu as="div" className="relative ml-3">
                   <div>
-                    <Menu.Button className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <Menu.Button className="flex text-sm bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                       <span className="sr-only">Open user menu</span>
                       <img
-                        className="h-8 w-8 rounded-full"
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        alt=""
+                        className="object-cover w-8 h-8 rounded-full"
+                        src={
+                          data?.me?.avatar ||
+                          encodeURI(
+                            `https://ui-avatars.com/api/?name=${data?.me?.username}&color=7F9CF5&background=EBF4FF`
+                          )
+                        }
+                        alt={`${data?.me?.username}'s profile`}
                       />
                     </Menu.Button>
                   </div>
@@ -76,58 +97,50 @@ export default function Nav() {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <Menu.Items className="absolute right-0 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      {userNavs.map((nav, index) => (
+                        <Menu.Item key={index}>
+                          {({ active }) => (
+                            <Link
+                              to={nav.to}
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              {nav.name}
+                            </Link>
+                          )}
+                        </Menu.Item>
+                      ))}
+                      {/* 로그아웃 버튼 */}
                       <Menu.Item>
                         {({ active }) => (
-                          <Link
-                            to={`${ROUTE.MY_PROFILE}/:id`}
+                          <button
+                            onClick={() => {
+                              logUserOut(navigate);
+                            }}
                             className={classNames(
                               active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            내 프로필
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to={ROUTE.CREATE_QUIZ}
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            문제 내기
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
+                              "block px-4 py-2 text-sm text-gray-700 w-full text-left"
                             )}
                           >
                             로그아웃
-                          </a>
+                          </button>
                         )}
                       </Menu.Item>
                     </Menu.Items>
                   </Transition>
                 </Menu>
               </div>
-              <div className="-mr-2 flex items-center sm:hidden">
+              <div className="flex items-center -mr-2 sm:hidden">
                 {/* Mobile menu button */}
-                <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-400 rounded-md hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
-                    <XIcon className="block h-6 w-6" aria-hidden="true" />
+                    <XIcon className="block w-6 h-6" aria-hidden="true" />
                   ) : (
-                    <MenuIcon className="block h-6 w-6" aria-hidden="true" />
+                    <MenuIcon className="block w-6 h-6" aria-hidden="true" />
                   )}
                 </Disclosure.Button>
               </div>
@@ -137,66 +150,60 @@ export default function Nav() {
           <Disclosure.Panel className="sm:hidden">
             <div className="pt-2 pb-3 space-y-1">
               {/* Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" */}
-              <Link to={ROUTE.HOME}>
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="bg-indigo-50 border-indigo-500 text-indigo-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-                >
-                  모두의 퀴즈
-                </Disclosure.Button>
-              </Link>
-              <Disclosure.Button
-                as="a"
-                href="#"
-                className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-              >
-                퀴즈 모음
-              </Disclosure.Button>
+              {headerNavs.map((nav, index) => (
+                <Link to={nav.to} key={index}>
+                  <Disclosure.Button
+                    className={`${
+                      nav.current
+                        ? "bg-indigo-50 border-indigo-500 text-indigo-700"
+                        : "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                    } block py-2 pl-3 pr-4 text-base font-medium border-l-4 w-full text-left`}
+                  >
+                    {nav.name}
+                  </Disclosure.Button>
+                </Link>
+              ))}
             </div>
             <div className="pt-4 pb-3 border-t border-gray-200">
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
                   <img
-                    className="h-10 w-10 rounded-full"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
+                    className="object-cover w-10 h-10 rounded-full"
+                    src={
+                      data?.me?.avatar ||
+                      encodeURI(
+                        `https://ui-avatars.com/api/?name=${data?.me?.username}&color=7F9CF5&background=EBF4FF`
+                      )
+                    }
+                    alt={`${data?.me?.username}'s profile`}
                   />
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-gray-800">
-                    Tom Cook
+                    {data?.me?.username}
                   </div>
                 </div>
                 <button
                   type="button"
-                  className="ml-auto flex-shrink-0 bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="flex-shrink-0 p-1 ml-auto text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
+                  <BellIcon className="w-6 h-6" aria-hidden="true" />
                 </button>
               </div>
               <div className="mt-3 space-y-1">
+                {userNavs.map((nav, index) => (
+                  <Link to={nav.to} key={index}>
+                    <Disclosure.Button className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                      문제내기
+                    </Disclosure.Button>
+                  </Link>
+                ))}
                 <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                >
-                  내 프로필
-                </Disclosure.Button>
-                <Link to={ROUTE.CREATE_QUIZ}>
-                  <Disclosure.Button
-                    as="a"
-                    href="#"
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                  >
-                    문제내기
-                  </Disclosure.Button>
-                </Link>
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                  onClick={() => {
+                    logUserOut(navigate);
+                  }}
+                  className="block w-full px-4 py-2 text-base font-medium text-left text-gray-500 hover:text-gray-800 hover:bg-gray-100"
                 >
                   로그아웃
                 </Disclosure.Button>

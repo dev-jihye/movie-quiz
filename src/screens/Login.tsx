@@ -56,7 +56,6 @@ export default function Login() {
       return;
     }
     login?.token && logUserIn(login.token);
-    console.log(login?.token);
     navigate(ROUTE.HOME);
   };
   const [login, { loading }] = useMutation(LOGIN_MUTATION, {

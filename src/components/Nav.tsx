@@ -3,131 +3,152 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 import { Link } from "react-router-dom";
 import { ROUTE } from "../constance";
+import { isLoggedInVar, logUserOut } from "../apolloClient";
+import useUser from "../hooks/useUser";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Nav() {
+  const isLoggedIn = isLoggedInVar();
+  const { data, loading } = useUser();
+  console.log(data);
+
+  console.log(isLoggedIn);
+  const onClick = () => {
+    logUserOut();
+  };
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
         <>
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
             <div className="flex justify-between h-16">
               <div className="flex">
-                <div className="flex-shrink-0 flex items-center">
+                <div className="flex items-center flex-shrink-0">
                   <Link to={ROUTE.HOME}>
-                    <img
-                      className="block lg:hidden h-8 w-auto"
-                      src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                      alt="Workflow"
-                    />
-                    <img
-                      className="hidden lg:block h-8 w-auto"
-                      src="https://tailwindui.com/img/logos/workflow-logo-indigo-600-mark-gray-800-text.svg"
-                      alt="Workflow"
-                    />
+                    <span className="text-3xl">🔥🎬</span>
                   </Link>
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                   {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
                   <Link
                     to={ROUTE.HOME}
-                    className="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 border-indigo-500"
                   >
                     모두의 퀴즈
                   </Link>
-                  <a
-                    href="#"
-                    className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                  <Link
+                    to={ROUTE.CONTEST}
+                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
                   >
-                    퀴즈 모음
-                  </a>
+                    콘테스트
+                  </Link>
+                  <Link
+                    to={ROUTE.CREATE_QUIZ}
+                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
+                  >
+                    퀴즈 내기
+                  </Link>
                 </div>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:items-center">
                 <button
                   type="button"
-                  className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="p-1 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
                 </button>
 
                 {/* Profile dropdown */}
-                <Menu as="div" className="ml-3 relative">
-                  <div>
-                    <Menu.Button className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                      <span className="sr-only">Open user menu</span>
-                      <img
-                        className="h-8 w-8 rounded-full"
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        alt=""
-                      />
-                    </Menu.Button>
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
+                {isLoggedIn ? (
+                  <Menu as="div" className="relative ml-3">
+                    <div>
+                      <Menu.Button className="flex text-sm bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <span className="sr-only">Open user menu</span>
+                        <img
+                          className="w-8 h-8 rounded-full"
+                          src={
+                            data?.me?.avatar ||
+                            encodeURI(
+                              `https://ui-avatars.com/api/?name=${data?.me?.username}&color=7F9CF5&background=EBF4FF`
+                            )
+                          }
+                          alt=""
+                        />
+                      </Menu.Button>
+                    </div>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-200"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className="absolute right-0 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              to={`${ROUTE.MY_PROFILE}/:id`}
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              내 프로필
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              onClick={onClick}
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              로그아웃
+                            </a>
+                          )}
+                        </Menu.Item>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
+                ) : (
+                  <Link
+                    to={ROUTE.LOGIN}
+                    className="ml-2 text-sm text-gray-500 hover:text-gray-700"
                   >
-                    <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to={`${ROUTE.MY_PROFILE}/:id`}
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            내 프로필
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to={ROUTE.CREATE_QUIZ}
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            문제 내기
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            로그아웃
-                          </a>
-                        )}
-                      </Menu.Item>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
+                    로그인
+                  </Link>
+                )}
               </div>
-              <div className="-mr-2 flex items-center sm:hidden">
+              <div className="flex items-center -mr-2 sm:hidden">
                 {/* Mobile menu button */}
-                <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-400 rounded-md hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
-                    <XIcon className="block h-6 w-6" aria-hidden="true" />
+                    <XIcon className="block w-6 h-6" aria-hidden="true" />
                   ) : (
-                    <MenuIcon className="block h-6 w-6" aria-hidden="true" />
+                    <MenuIcon className="block w-6 h-6" aria-hidden="true" />
                   )}
                 </Disclosure.Button>
               </div>
@@ -139,9 +160,8 @@ export default function Nav() {
               {/* Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" */}
               <Link to={ROUTE.HOME}>
                 <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="bg-indigo-50 border-indigo-500 text-indigo-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+                  as="div"
+                  className="block py-2 pl-3 pr-4 text-base font-medium text-indigo-700 border-l-4 border-indigo-500 bg-indigo-50"
                 >
                   모두의 퀴즈
                 </Disclosure.Button>
@@ -149,17 +169,30 @@ export default function Nav() {
               <Disclosure.Button
                 as="a"
                 href="#"
-                className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+                className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
               >
-                퀴즈 모음
+                콘테스트
               </Disclosure.Button>
+              <Link to={ROUTE.CREATE_QUIZ}>
+                <Disclosure.Button
+                  as="div"
+                  className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
+                >
+                  퀴즈 내기
+                </Disclosure.Button>
+              </Link>
             </div>
             <div className="pt-4 pb-3 border-t border-gray-200">
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
                   <img
-                    className="h-10 w-10 rounded-full"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    className="w-10 h-10 rounded-full"
+                    src={
+                      data?.me?.avatar ||
+                      encodeURI(
+                        `https://ui-avatars.com/api/?name=${data?.me?.username}&color=7F9CF5&background=EBF4FF`
+                      )
+                    }
                     alt=""
                   />
                 </div>
@@ -170,10 +203,10 @@ export default function Nav() {
                 </div>
                 <button
                   type="button"
-                  className="ml-auto flex-shrink-0 bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="flex-shrink-0 p-1 ml-auto text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
+                  <BellIcon className="w-6 h-6" aria-hidden="true" />
                 </button>
               </div>
               <div className="mt-3 space-y-1">
@@ -184,15 +217,6 @@ export default function Nav() {
                 >
                   내 프로필
                 </Disclosure.Button>
-                <Link to={ROUTE.CREATE_QUIZ}>
-                  <Disclosure.Button
-                    as="a"
-                    href="#"
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                  >
-                    문제내기
-                  </Disclosure.Button>
-                </Link>
                 <Disclosure.Button
                   as="a"
                   href="#"

@@ -40,9 +40,7 @@ export default function Quiz({ post }: QuizProps) {
             {post.category.name}
           </span>
         </div>
-        <p className="text-xl font-semibold text-gray-500 mx-4 mt-4">
-          {post.title}
-        </p>
+        <p className="text-lg font-semibold mx-4 mt-4">{post.title}</p>
         <div className="mt-6 flex items-center mx-4">
           <div className="flex-shrink-0">
             <span className="sr-only">{post.author.name}</span>
@@ -56,14 +54,9 @@ export default function Quiz({ post }: QuizProps) {
             <p className="text-sm font-medium text-gray-500">
               {post.author.name}
             </p>
-            {/* <div className="flex space-x-1 text-sm text-gray-500">
-                      <time dateTime={post.datetime}>{post.date}</time>
-                      <span aria-hidden="true">&middot;</span>
-                      <span>{post.readingTime} read</span>
-                    </div> */}
           </div>
         </div>
-        <div className="flex space-x-1 text-sm text-gray-50 justify-between m-4">
+        <div className="flex space-x-1 text-sm text-gray-500 justify-between m-4">
           <time>정답률&nbsp;&nbsp;{post.correct}</time>
           <span>❤️ {post.like}</span>
         </div>

@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ROUTE } from "../constance";
 
 const CREATE_USER_MUTATION = gql`
-  mutation Mutation($email: String!, $username: String!, $password: String!) {
+  mutation createUser($email: String!, $username: String!, $password: String!) {
     createUser(email: $email, username: $username, password: $password) {
       ok
       error

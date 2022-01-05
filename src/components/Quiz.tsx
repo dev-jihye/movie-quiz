@@ -1,64 +1,45 @@
 import { Link } from "react-router-dom";
 import { ROUTE } from "../constance";
 
-interface QuizProps {
-  post: {
-    id: number;
-    title: string;
-    href: string;
-    card: {
-      color: string;
-      href: string;
-    };
-    category: {
-      name: string;
-      href: string;
-      color: string;
-    };
-    correct: string;
-    datetime: string;
-    author: {
-      name: string;
-      href: string;
-      imageUrl: string;
-    };
-    like: string;
-  };
-}
+export default function Quiz({ post }: any) {
+  const hashtags = post.quizHashtags.map((item: any) => item.hashtag);
 
-export default function Quiz({ post }: QuizProps) {
   return (
-    <div key={post.title} className={(post.card.color, "rounded-lg")}>
+    <div className="rounded-lg">
       <Link to={`${ROUTE.QUIZ}/${post.id}`}>
         <div>
           <span
             className={
-              (post.category.color,
-              "inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium m-4")
+              "inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium m-4"
             }
           >
-            {post.category.name}
+            {post.genre}
           </span>
         </div>
-        <p className="text-lg font-semibold mx-4 mt-4">{post.title}</p>
-        <div className="mt-6 flex items-center mx-4">
+        <p className="mx-4 mt-4 text-lg font-semibold">{hashtags.join(" ")}</p>
+        <div className="flex items-center mx-4 mt-6">
           <div className="flex-shrink-0">
-            <span className="sr-only">{post.author.name}</span>
+            <span className="sr-only">{post.user.username}</span>
             <img
-              className="h-10 w-10 rounded-full"
-              src={post.author.imageUrl}
+              className="w-10 h-10 rounded-full"
+              src={
+                post.user.avatar ||
+                encodeURI(
+                  `https://ui-avatars.com/api/?name=${post.user.username}&color=7F9CF5&background=EBF4FF`
+                )
+              }
               alt=""
             />
           </div>
           <div className="ml-3">
             <p className="text-sm font-medium text-gray-500">
-              {post.author.name}
+              {post.user.username}
             </p>
           </div>
         </div>
-        <div className="flex space-x-1 text-sm text-gray-500 justify-between m-4">
-          <time>정답률&nbsp;&nbsp;{post.correct}</time>
-          <span>❤️ {post.like}</span>
+        <div className="flex justify-between m-4 space-x-1 text-sm text-gray-500">
+          <time>정답률&nbsp;&nbsp;{post.answerRate}</time>
+          <span>❤️ {post.totalLike}</span>
         </div>
       </Link>
     </div>

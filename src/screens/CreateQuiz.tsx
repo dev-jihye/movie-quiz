@@ -1,28 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Layout from "../components/Layout";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
-import { gql } from "@apollo/client";
-
-const PreviewBox = styled.div`
-  position: relative;
-  z-index: 0;
-`;
-
-const LabelButton = styled.label`
-  position: absolute;
-  right: 15px;
-  bottom: 15px;
-  cursor: pointer;
-  border-radius: 4px;
-  background-color: white;
-  padding: 4px 8px;
-  opacity: 0.7;
-
-  &:hover {
-    opacity: 0.9;
-  }
-`;
+import { gql, useMutation } from "@apollo/client";
 
 const CREATE_QUIZ_MUTATION = gql`
   mutation Mutation(
@@ -64,28 +44,79 @@ const CREATE_QUIZ_MUTATION = gql`
 `;
 
 export default function CreateQuiz() {
+  const fileRef = useRef<any>();
   const [imgPreview, setImgPreview] = useState("");
-  const [answerType, setAnswerType] = useState("shortAnswer");
-  const { register, watch } = useForm({
+  const [answerType, setAnswerType] = useState("subjective");
+  const [image, setImage] = useState<any>(null);
+  const { register, handleSubmit, watch } = useForm({
     defaultValues: {
-      quizType: "shortAnswer",
+      type: "subjective",
+      genre: "액션",
+      content: "",
+      choiceOne: "",
+      choiceTwo: "",
+      choiceThree: "",
+      choiceFour: "",
+      answer: "",
+      quizHashtags: "",
     },
+    mode: "onChange",
   });
 
   useEffect(() => {
-    console.log(watch("quizType"));
-    setAnswerType(watch("quizType"));
-  }, [watch("quizType")]);
+    setAnswerType(watch("type"));
+  }, [watch("type")]);
 
   const onImgChange = (e: any) => {
     const {
       target: { files },
     } = e;
+    console.log(files);
+    setImage(files[0]);
+  };
+
+  const onCompleted = (data: any) => {
+    console.log(data);
+  };
+
+  const [createQuiz, { loading, error }] = useMutation(CREATE_QUIZ_MUTATION, {
+    onCompleted,
+  });
+
+  const onSubmit = (data: any) => {
+    createQuiz({
+      variables: {
+        ...data,
+        choice: [
+          watch("choiceOne"),
+          watch("choiceTwo"),
+          watch("choiceThree"),
+          watch("choiceFour"),
+        ],
+        image: image || undefined,
+      },
+    });
+    console.log(data);
+  };
+
+  const onFileChange = (event: any) => {
+    const {
+      target: { files },
+    } = event;
+    const file = files[0];
+    const imgBlob = URL.createObjectURL(file);
+    console.log(imgBlob);
+    setImgPreview(imgBlob);
+  };
+
+  const onDeleteClick = () => {
+    setImgPreview("");
+    fileRef.current.value = "";
   };
 
   return (
     <Layout>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset>
           <div>
             <legend className="text-base font-medium text-gray-900">
@@ -96,38 +127,30 @@ export default function CreateQuiz() {
             </p>
           </div>
           <div className="flex mt-2">
-            <div className="flex items-center">
+            <label className="flex items-center">
               <input
-                {...register("quizType")}
-                id="short-answer"
-                name="quizType"
+                {...register("type")}
+                name="type"
                 type="radio"
-                value="shortAnswer"
+                value="subjective"
                 className="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
               />
-              <label
-                htmlFor="short-answer"
-                className="block ml-3 text-sm font-medium text-gray-700"
-              >
+              <span className="block ml-3 text-sm font-medium text-gray-700">
                 주관식
-              </label>
-            </div>
-            <div className="flex items-center">
+              </span>
+            </label>
+            <label className="flex items-center">
               <input
-                {...register("quizType")}
-                id="multiple-choice"
-                name="quizType"
+                {...register("type")}
+                name="type"
                 type="radio"
-                value="multipleChoice"
+                value="choice"
                 className="w-4 h-4 ml-6 text-indigo-600 border-gray-300 focus:ring-indigo-500"
               />
-              <label
-                htmlFor="multiple-choice"
-                className="block ml-3 text-sm font-medium text-gray-700"
-              >
+              <span className="block ml-3 text-sm font-medium text-gray-700">
                 객관식
-              </label>
-            </div>
+              </span>
+            </label>
           </div>
         </fieldset>
         <div className="sm:col-span-3">
@@ -139,9 +162,8 @@ export default function CreateQuiz() {
           </label>
           <div className="mt-1">
             <select
+              {...register("genre")}
               id="genre"
-              name="genre"
-              autoComplete="genre-name"
               className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             >
               <option>액션</option>
@@ -154,7 +176,7 @@ export default function CreateQuiz() {
               <option>공포</option>
               <option>가족</option>
               <option>사극</option>
-              <option>Sf</option>
+              <option>SF</option>
               <option>전쟁</option>
               <option>판타지</option>
               <option>다큐멘터리</option>
@@ -166,23 +188,23 @@ export default function CreateQuiz() {
         <div className="grid grid-cols-1 mt-6 gap-y-6 gap-x-4 sm:grid-cols-6">
           <div className="sm:col-span-6">
             <label
-              htmlFor="question"
+              htmlFor="content"
               className="block text-sm font-medium text-gray-700"
             >
               문제
             </label>
             <div className="mt-1">
               <textarea
-                id="question"
-                name="question"
+                {...register("content", {
+                  required: true,
+                })}
                 rows={3}
                 className="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                defaultValue={""}
               />
             </div>
 
             <div>
-              {answerType === "shortAnswer" ? (
+              {answerType === "subjective" ? (
                 ""
               ) : (
                 <>
@@ -192,14 +214,13 @@ export default function CreateQuiz() {
                         htmlFor="choice-one"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        보기 1번
+                        보기 1
                       </label>
                       <div className="mt-1">
                         <input
+                          {...register("choiceOne")}
                           type="text"
-                          name="choice-one"
                           id="choice-one"
-                          autoComplete="given-name"
                           className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         />
                       </div>
@@ -209,14 +230,13 @@ export default function CreateQuiz() {
                         htmlFor="choice-two"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        보기 2번
+                        보기 2
                       </label>
                       <div className="mt-1">
                         <input
+                          {...register("choiceTwo")}
                           type="text"
-                          name="choice-two"
                           id="choice-two"
-                          autoComplete="family-name"
                           className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         />
                       </div>
@@ -226,14 +246,13 @@ export default function CreateQuiz() {
                         htmlFor="choice-three"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        보기 3번
+                        보기 3
                       </label>
                       <div className="mt-1">
                         <input
+                          {...register("choiceThree")}
                           type="text"
-                          name="choice-three"
                           id="choice-three"
-                          autoComplete="given-name"
                           className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         />
                       </div>
@@ -243,14 +262,13 @@ export default function CreateQuiz() {
                         htmlFor="choice-four"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        보기 4번
+                        보기 4
                       </label>
                       <div className="mt-1">
                         <input
+                          {...register("choiceFour")}
                           type="text"
-                          name="choice-four"
                           id="choice-four"
-                          autoComplete="family-name"
                           className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         />
                       </div>
@@ -265,85 +283,123 @@ export default function CreateQuiz() {
                   className="block text-sm font-medium text-gray-700"
                 >
                   정답
+                  <span className="ml-2 text-xs text-gray-500">
+                    (객관식의 경우 보기 번호만 적어주세요)
+                  </span>
                 </label>
                 <div className="mt-1">
                   <input
+                    {...register("answer", { required: true })}
                     type="text"
                     name="answer"
                     id="answer"
-                    autoComplete="answer"
                     className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   />
                 </div>
               </div>
 
               <div className="mt-6 sm:col-span-6">
-                {imgPreview ? (
-                  <PreviewBox className="flex justify-center max-w-lg overflow-hidden border-2 border-gray-300 border-dashed rounded-md">
-                    <img src={imgPreview} />
-                    <LabelButton htmlFor="file-upload">수정</LabelButton>
-                  </PreviewBox>
+                {imgPreview.length < 1 ? (
+                  <div className="grid grid-cols-1 mt-6 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <div className="sm:col-span-6">
+                      <label
+                        htmlFor="imgPreview"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        이미지
+                        <span className="ml-2 text-xs text-gray-500">
+                          (선택)
+                        </span>
+                      </label>
+                      <label
+                        htmlFor="imgPreview"
+                        className="flex justify-center px-6 pt-5 pb-6 mt-1 border-2 border-gray-300 border-dashed rounded-md cursor-pointer hover:bg-gray-50"
+                      >
+                        <div className="space-y-1 text-center">
+                          <svg
+                            className="w-12 h-12 mx-auto text-gray-400"
+                            stroke="currentColor"
+                            fill="none"
+                            viewBox="0 0 48 48"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                              strokeWidth={2}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          <div className="flex justify-center text-sm text-gray-600">
+                            <span className="relative font-medium text-indigo-600 rounded-md">
+                              <span>이미지 업로드</span>
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-500">
+                            PNG, JPG 최대 5MB
+                          </p>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
                 ) : (
-                  <>
-                    <label
-                      htmlFor="image"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      이미지 (선택)
-                    </label>
-                    <div className="flex justify-center px-6 pt-5 pb-6 mt-1 border-2 border-gray-300 border-dashed rounded-md">
-                      <div className="space-y-1 text-center">
+                  <div className="py-8">
+                    <div className="relative flex justify-center rounded-lg bg-gray-50">
+                      <img
+                        src={imgPreview}
+                        className="object-contain"
+                        style={{ height: 400 }}
+                      />
+                      <button
+                        onClick={onDeleteClick}
+                        type="button"
+                        className="inline-flex absolute top-10 right-10 items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                      >
                         <svg
-                          className="w-12 h-12 mx-auto text-gray-400"
-                          stroke="currentColor"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-6 h-6"
                           fill="none"
-                          viewBox="0 0 48 48"
-                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                         >
                           <path
-                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                            strokeWidth={2}
                             strokeLinecap="round"
                             strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
                           />
                         </svg>
-                        <div className="flex text-sm text-gray-600">
-                          <label
-                            htmlFor="file-upload"
-                            className="relative font-medium text-indigo-600 bg-white rounded-md cursor-pointer hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
-                          >
-                            <span>Upload a file</span>
-                            <input
-                              id="file-upload"
-                              name="file-upload"
-                              type="file"
-                              accept="image/*"
-                              className="sr-only"
-                              onChange={onImgChange}
-                            />
-                          </label>
-                        </div>
-                        <p className="text-xs text-gray-500">
-                          PNG, JPG up to 5MB
-                        </p>
-                      </div>
+                        제거
+                      </button>
                     </div>
-                  </>
+                  </div>
                 )}
+                <input
+                  ref={fileRef}
+                  id="imgPreview"
+                  name="imgPreview"
+                  type="file"
+                  className="sr-only"
+                  accept="image/jpeg, image/png"
+                  onChange={onFileChange}
+                />
               </div>
               <div className="mt-6 sm:col-span-6">
                 <label
-                  htmlFor="tag"
+                  htmlFor="quizHashtags"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  해시태그 (10개까지 가능)
+                  해시태그{" "}
+                  <span className="ml-2 text-xs text-gray-500">
+                    (10개까지 가능)
+                  </span>
                 </label>
                 <div className="mt-1">
                   <input
+                    {...register("quizHashtags", { required: true })}
                     type="text"
-                    name="tag"
-                    id="tag"
-                    autoComplete="tag"
+                    name="quizHashtags"
+                    id="quizHashtags"
                     className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     placeholder="#실화배경 #한국영화 #빈칸채우기"
                   />

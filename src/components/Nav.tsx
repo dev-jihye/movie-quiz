@@ -13,9 +13,6 @@ function classNames(...classes: any) {
 export default function Nav() {
   const isLoggedIn = isLoggedInVar();
   const { data, loading } = useUser();
-  console.log(data);
-
-  console.log(isLoggedIn);
   const onClick = () => {
     logUserOut();
   };

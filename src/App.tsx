@@ -11,6 +11,7 @@ import CreateUser from "./screens/CreateUser";
 import { ApolloProvider, useReactiveVar } from "@apollo/client";
 import { apolloClient, isLoggedInVar } from "./apolloClient";
 import Login from "./screens/Login";
+import UpdateQuiz from "./screens/UpdateQuiz";
 
 export default function App() {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
@@ -35,6 +36,10 @@ export default function App() {
               <Route
                 path={`${ROUTE.QUIZ}/:id${ROUTE.RESULT}`}
                 element={<Result />}
+              />
+              <Route
+                path={`${ROUTE.QUIZ}/:id${ROUTE.EDIT_QUIZ}`}
+                element={<UpdateQuiz />}
               />
             </>
           )}

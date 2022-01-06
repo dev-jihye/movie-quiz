@@ -38,7 +38,7 @@ export default function Quiz({ post }: any) {
           </div>
         </div>
         <div className="flex justify-between m-4 space-x-1 text-sm text-gray-500">
-          <time>정답률&nbsp;&nbsp;{post.answerRate}</time>
+          <time>정답률&nbsp;&nbsp;{post.answerRate}%</time>
           <span>❤️ {post.totalLike}</span>
         </div>
       </Link>

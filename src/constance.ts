@@ -7,4 +7,5 @@ export const ROUTE = {
   RESULT: "/result",
   LOGIN: "/login",
   CREATE_USER: "/create-user",
+  EDIT_QUIZ: "/edit-quiz",
 };

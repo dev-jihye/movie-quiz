@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { gql, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { shouldRefetchVar } from "../makeVars/QuizVars";
+import { USER_FRAGMENT } from "../components/Fragments";
 
 const CREATE_QUIZ_MUTATION = gql`
   mutation createQuiz(
@@ -26,20 +27,6 @@ const CREATE_QUIZ_MUTATION = gql`
     ) {
       ok
       error
-      quiz {
-        id
-        user {
-          id
-          username
-          avatar
-        }
-        genre
-        quizHashtags {
-          hashtag
-        }
-        answerRate
-        totalLikes
-      }
     }
   }
 `;
@@ -74,12 +61,15 @@ export default function CreateQuiz() {
     navigate("/");
   };
 
-  const [createQuiz, { loading, error }] = useMutation(CREATE_QUIZ_MUTATION, {
-    onCompleted,
-  });
+  const [createQuizMutation, { loading, error }] = useMutation(
+    CREATE_QUIZ_MUTATION,
+    {
+      onCompleted,
+    }
+  );
 
   const onSubmit = (data: any) => {
-    createQuiz({
+    createQuizMutation({
       variables: {
         ...data,
         choice: [

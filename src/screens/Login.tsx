@@ -29,7 +29,7 @@ export default function Login() {
   });
 
   const onSubmit = (data: any) => {
-    login({
+    loginMutation({
       variables: {
         ...data,
       },
@@ -48,7 +48,7 @@ export default function Login() {
     }
   };
 
-  const [login, { loading, error }] = useMutation(LOGIN_MUTATION, {
+  const [loginMutation, { loading, error }] = useMutation(LOGIN_MUTATION, {
     onCompleted,
   });
 

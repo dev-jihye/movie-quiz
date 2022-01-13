@@ -1,10 +1,11 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 import { Link } from "react-router-dom";
 import { ROUTE } from "../constance";
 import { isLoggedInVar, logUserOut } from "../apolloClient";
 import useUser from "../hooks/useUser";
+import { loginUserVar } from "../makeVars/UserVars";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -16,6 +17,11 @@ export default function Nav() {
   const onClick = () => {
     logUserOut();
   };
+
+  useEffect(() => {
+    loginUserVar(data);
+  }, [data]);
+
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
@@ -35,12 +41,6 @@ export default function Nav() {
                     className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 border-indigo-500"
                   >
                     모두의 퀴즈
-                  </Link>
-                  <Link
-                    to={ROUTE.CONTEST}
-                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
-                  >
-                    콘테스트
                   </Link>
                   <Link
                     to={ROUTE.CREATE_QUIZ}
@@ -98,7 +98,7 @@ export default function Nav() {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="absolute right-0 z-10 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <Menu.Item>
                           {({ active }) => (
                             <Link
@@ -114,8 +114,8 @@ export default function Nav() {
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <a
-                              href="#"
+                            <Link
+                              to="/"
                               onClick={onClick}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
@@ -123,7 +123,7 @@ export default function Nav() {
                               )}
                             >
                               로그아웃
-                            </a>
+                            </Link>
                           )}
                         </Menu.Item>
                       </Menu.Items>
@@ -163,13 +163,7 @@ export default function Nav() {
                   모두의 퀴즈
                 </Disclosure.Button>
               </Link>
-              <Disclosure.Button
-                as="a"
-                href="#"
-                className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700"
-              >
-                콘테스트
-              </Disclosure.Button>
+
               <Link to={ROUTE.CREATE_QUIZ}>
                 <Disclosure.Button
                   as="div"
@@ -195,16 +189,9 @@ export default function Nav() {
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-gray-800">
-                    Tom Cook
+                    {data?.me?.username}
                   </div>
                 </div>
-                <button
-                  type="button"
-                  className="flex-shrink-0 p-1 ml-auto text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="w-6 h-6" aria-hidden="true" />
-                </button>
               </div>
               <div className="mt-3 space-y-1">
                 <Disclosure.Button

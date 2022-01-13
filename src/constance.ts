@@ -7,5 +7,9 @@ export const ROUTE = {
   RESULT: "/result",
   LOGIN: "/login",
   CREATE_USER: "/create-user",
-  EDIT_QUIZ: "/edit-quiz",
+  UPDATE_QUIZ: "/update-quiz",
 };
+
+export function classNames(...classes: any) {
+  return classes.filter(Boolean).join(" ");
+}

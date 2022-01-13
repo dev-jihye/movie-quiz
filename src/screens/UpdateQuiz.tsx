@@ -2,32 +2,17 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { SHOW_QUIZ_FRAGMENT } from "../components/Fragments";
 import Layout from "../components/Layout";
 import { shouldRefetchVar } from "../makeVars/QuizVars";
 
 const SHOW_QUIZ_QUERY = gql`
   query showQuiz($id: Int!) {
     showQuiz(id: $id) {
-      id
-      user {
-        id
-        username
-        avatar
-      }
-      genre
-      quizHashtags {
-        hashtag
-      }
-      answerRate
-      totalLikes
-      content
-      choice
-      type
-      image
-      isMine
-      answer
+      ...ShowQuizFragment
     }
   }
+  ${SHOW_QUIZ_FRAGMENT}
 `;
 
 const UPDATE_QUIZ_MUTATION = gql`
@@ -37,7 +22,7 @@ const UPDATE_QUIZ_MUTATION = gql`
     $genre: String
     $image: Upload
     $content: String
-    $choice: [String]
+    $choice: [String!]!
     $answer: String
     $quizHashtags: String
     $fileExists: Boolean!
@@ -63,11 +48,11 @@ export default function EditQuiz() {
   const fileRef = useRef<any>();
   const [answerType, setAnswerType] = useState("subjective");
   const [imgPreview, setImgPreview] = useState("");
-  const [fileExists, setFileExists] = useState(false);
+  const [fileExists, setFileExists] = useState(true);
   const [image, setImage] = useState<any>(null);
   const navigate = useNavigate();
   const param = useParams();
-  const { loading, error, data, refetch } = useQuery(SHOW_QUIZ_QUERY, {
+  const { loading, data } = useQuery(SHOW_QUIZ_QUERY, {
     variables: {
       id: parseInt(param.id as string),
     },
@@ -107,13 +92,12 @@ export default function EditQuiz() {
     navigate("/");
   };
 
-  const [updateQuiz, { loading: updateLoading, error: updateError }] =
-    useMutation(UPDATE_QUIZ_MUTATION, {
-      onCompleted,
-    });
+  const [updateQuizMutation] = useMutation(UPDATE_QUIZ_MUTATION, {
+    onCompleted,
+  });
 
   const onSubmit = (data: any) => {
-    updateQuiz({
+    updateQuizMutation({
       variables: {
         id: parseInt(param.id as string),
         ...data,
@@ -127,7 +111,6 @@ export default function EditQuiz() {
         fileExists,
       },
     });
-    console.log(data, image);
   };
   const onFileChange = (event: any) => {
     const {
@@ -471,5 +454,3 @@ export default function EditQuiz() {
     </Layout>
   );
 }
-
-// show query -> data 뿌리기 -> useForm 수정 -> update mutation

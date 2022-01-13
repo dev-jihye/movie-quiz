@@ -28,11 +28,14 @@ export default function CreateUser() {
       navigate(ROUTE.HOME);
     }
   };
-  const [createUser, { loading, error }] = useMutation(CREATE_USER_MUTATION, {
-    onCompleted,
-  });
+  const [createUserMutation, { loading, error }] = useMutation(
+    CREATE_USER_MUTATION,
+    {
+      onCompleted,
+    }
+  );
   const onSubmit = (data: any) => {
-    createUser({
+    createUserMutation({
       variables: {
         ...data,
       },

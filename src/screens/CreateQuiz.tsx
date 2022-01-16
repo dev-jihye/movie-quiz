@@ -13,7 +13,7 @@ const CREATE_QUIZ_MUTATION = gql`
     $content: String!
     $answer: String!
     $image: Upload
-    $choice: [String]
+    $choice: [String!]!
     $quizHashtags: String
   ) {
     createQuiz(

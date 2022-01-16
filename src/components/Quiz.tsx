@@ -28,9 +28,9 @@ export default function Quiz({ post, bgColor }: any) {
           <div className="flex-shrink-0">
             <span className="sr-only">{post.user.username}</span>
             <img
-              className="rounded-full w-9 h-9"
+              className="object-cover rounded-full w-9 h-9"
               src={
-                post.user.avatar ||
+                post?.user?.avatar?.Location ||
                 encodeURI(
                   `https://ui-avatars.com/api/?name=${post.user.username}&color=7F9CF5&background=EBF4FF`
                 )
@@ -42,9 +42,9 @@ export default function Quiz({ post, bgColor }: any) {
             <p className="text-sm font-medium ">{post.user.username}</p>
           </div>
         </div>
-        <div className="flex justify-between m-4 space-x-1 text-sm ">
+        <div className="flex items-center justify-between m-4 mt-3 space-x-1 text-sm">
           <span>정답률&nbsp;&nbsp;{post.answerRate}%</span>
-          <div className="flex mb-3">
+          <div className="flex items-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="w-6 h-6"

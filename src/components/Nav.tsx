@@ -14,6 +14,7 @@ function classNames(...classes: any) {
 export default function Nav() {
   const isLoggedIn = isLoggedInVar();
   const { data, loading } = useUser();
+
   const onClick = () => {
     logUserOut();
   };
@@ -21,7 +22,6 @@ export default function Nav() {
   useEffect(() => {
     loginUserVar(data);
   }, [data]);
-
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
@@ -78,14 +78,14 @@ export default function Nav() {
                       <Menu.Button className="flex text-sm bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <span className="sr-only">Open user menu</span>
                         <img
-                          className="w-8 h-8 rounded-full"
+                          className="object-cover w-8 h-8 rounded-full"
                           src={
-                            data?.me?.avatar ||
+                            data?.me?.avatar?.Location ||
                             encodeURI(
                               `https://ui-avatars.com/api/?name=${data?.me?.username}&color=7F9CF5&background=EBF4FF`
                             )
                           }
-                          alt=""
+                          alt="profile"
                         />
                       </Menu.Button>
                     </div>
@@ -102,7 +102,7 @@ export default function Nav() {
                         <Menu.Item>
                           {({ active }) => (
                             <Link
-                              to={`${ROUTE.MY_PROFILE}/:id`}
+                              to={`${ROUTE.MY_PROFILE}/${data?.me?.id}`}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
                                 "block px-4 py-2 text-sm text-gray-700"
@@ -177,9 +177,9 @@ export default function Nav() {
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
                   <img
-                    className="w-10 h-10 rounded-full"
+                    className="object-cover w-10 h-10 rounded-full"
                     src={
-                      data?.me?.avatar ||
+                      data?.me?.avatar?.Location ||
                       encodeURI(
                         `https://ui-avatars.com/api/?name=${data?.me?.username}&color=7F9CF5&background=EBF4FF`
                       )
@@ -194,20 +194,22 @@ export default function Nav() {
                 </div>
               </div>
               <div className="mt-3 space-y-1">
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                >
-                  내 프로필
-                </Disclosure.Button>
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                >
-                  로그아웃
-                </Disclosure.Button>
+                <Link to={`${ROUTE.MY_PROFILE}/${data?.me?.id}`}>
+                  <Disclosure.Button
+                    as="div"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                  >
+                    내 프로필
+                  </Disclosure.Button>
+                </Link>
+                <Link to="/">
+                  <Disclosure.Button
+                    as="div"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                  >
+                    로그아웃
+                  </Disclosure.Button>
+                </Link>
               </div>
             </div>
           </Disclosure.Panel>

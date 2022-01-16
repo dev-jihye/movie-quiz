@@ -26,6 +26,7 @@ export default function AnswerForm({
     console.log(data);
     if (data?.quizTry?.ok) {
       if (!data.quizTry.result) {
+        //문제를 풀었는데 정답이 아닌 경우
         apolloClient.cache.modify({
           id: `Quiz:${showQuiz.id}`,
           fields: {
@@ -39,6 +40,7 @@ export default function AnswerForm({
           },
         });
       } else {
+        //문제를 풀어서 맞춘 경우
         apolloClient.cache.modify({
           id: `Quiz:${showQuiz.id}`,
           fields: {
@@ -49,6 +51,7 @@ export default function AnswerForm({
         });
       }
       setIsCorrect(data.quizTry.result);
+      console.log(data.quizTry.result, "quizTry");
     } else {
       setTryError(data.quizTry.error);
     }

@@ -1,0 +1,72 @@
+import { gql } from "@apollo/client";
+
+const SHOW_USER = gql`
+  query Query($showUserId: Int!) {
+    showUser(id: $showUserId) {
+      id
+      email
+      username
+      avatar
+    }
+  }
+`;
+
+export default function ShowProfileInfo({
+  data: userData,
+  setIsEditable,
+}: any) {
+  const onEditClick = () => {
+    setIsEditable(true);
+  };
+
+  return (
+    <div className="mb-2">
+      <form className="flex items-center w-full ">
+        <div className="flex justify-center w-1/2 md:w-1/4">
+          <div className="relative">
+            <img
+              src={
+                userData?.me?.avatar?.Location ||
+                encodeURI(
+                  `https://ui-avatars.com/api/?name=${userData?.me?.username}&color=7F9CF5&background=EBF4FF`
+                )
+              }
+              alt="profile"
+              className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28"
+            />
+          </div>
+        </div>
+        <div className="w-1/2 md:w-3/4">
+          <div className="w-full ml-2 md:ml-4">
+            <div className="flex items-center w-full">
+              <p className="w-full text-xl sm:text-2xl">
+                {userData?.me?.username}
+              </p>
+            </div>
+          </div>
+          <div className="flex mt-4 ml-2 md:ml-4">
+            <div>
+              <p className="mb-2 text-sm sm:text-base">도전 문제</p>
+              <p className="text-xl text-center text-gray-500">
+                {userData?.me?.totalTries}
+              </p>
+            </div>
+            <div className="ml-2 sm:ml-8">
+              <p className="mb-2 text-sm sm:text-base">맞춘 문제</p>
+              <p className="text-xl text-center text-gray-500">
+                {userData?.me?.totalConquests}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onEditClick}
+            className="px-3 py-1 mt-2 ml-2 text-xs text-gray-400 border border-gray-400 rounded-md md:ml-4"
+          >
+            프로필 수정
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

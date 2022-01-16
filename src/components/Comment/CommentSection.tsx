@@ -26,7 +26,6 @@ export default function CommentSection() {
       id: parseInt(param.id as string),
     },
   });
-  console.log(data);
 
   return (
     <div>

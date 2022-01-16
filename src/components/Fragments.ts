@@ -8,6 +8,13 @@ export const USER_FRAGMENT = gql`
   }
 `;
 
+export const QUIZ_HASHTAGS_FRAGMENT = gql`
+  fragment QuizHashtagsFragment on QuizHashtag {
+    id
+    hashtag
+  }
+`;
+
 export const SHOW_QUIZ_FRAGMENT = gql`
   fragment ShowQuizFragment on Quiz {
     id
@@ -16,8 +23,7 @@ export const SHOW_QUIZ_FRAGMENT = gql`
     }
     genre
     quizHashtags {
-      id
-      hashtag
+      ...QuizHashtagsFragment
     }
     answerRate
     totalLikes
@@ -33,4 +39,5 @@ export const SHOW_QUIZ_FRAGMENT = gql`
     totalLikes
   }
   ${USER_FRAGMENT}
+  ${QUIZ_HASHTAGS_FRAGMENT}
 `;

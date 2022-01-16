@@ -42,14 +42,20 @@ export default function ShowQuiz() {
   useEffect(() => {
     console.log(data?.showQuiz?.nextTry);
     if (data?.showQuiz) {
-      if (data?.showQuiz?.nextTry > 0) {
+      if (data?.showQuiz?.isWinner) {
         setIsAnswer(true);
-        setTryError(`${data.showQuiz.nextTry}초 후 다시 시도해주세요`);
+        setIsCorrect(true);
       } else {
-        setIsAnswer(data.showQuiz.isWinner);
-        setIsCorrect(data.showQuiz.isWinner);
+        if (data?.showQuiz?.nextTry > 0) {
+          setIsAnswer(true);
+          setTryError(`${data.showQuiz.nextTry}초 후 다시 시도해주세요`);
+        } else {
+          setIsAnswer(false);
+          setIsCorrect(false);
+        }
       }
     }
+    console.log(data);
   }, [data]);
 
   useEffect(() => {

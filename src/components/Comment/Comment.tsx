@@ -15,9 +15,9 @@ export default function Comment({ comment }: any) {
       <div className="flex items-start mt-4 space-x-4">
         <div className="flex-shrink-0">
           <img
-            className="inline-block w-10 h-10 rounded-full"
+            className="inline-block object-cover w-10 h-10 rounded-full"
             src={
-              comment.user.avatar ||
+              comment?.user?.avatar?.Location ||
               encodeURI(
                 `https://ui-avatars.com/api/?name=${comment.user.username}&color=7F9CF5&background=EBF4FF`
               )

@@ -4,12 +4,12 @@ export default function Info({ showQuiz }: any) {
       <div className="flex items-center mb-4">
         <img
           src={
-            showQuiz?.user?.avatar ||
+            showQuiz?.user?.avatar?.Location ||
             encodeURI(
               `https://ui-avatars.com/api/?name=${showQuiz?.user?.username}&color=7F9CF5&background=EBF4FF`
             )
           }
-          className="w-10 h-10 rounded-full"
+          className="object-cover w-10 h-10 rounded-full"
         />
         <span className="ml-3">{showQuiz?.user?.username}</span>
       </div>

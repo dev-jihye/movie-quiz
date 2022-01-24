@@ -6,10 +6,5 @@ module.exports = {
       name: "Movie-Quiz-Deployed",
       url: "https://movie-quiz-madstone.herokuapp.com",
     },
-    headers: {
-      authorization: "Bearer HpFbOUyIxqUgkBowUSlWBg",
-    },
-    // optional disable SSL validation check
-    skipSSLValidation: true,
   },
 };

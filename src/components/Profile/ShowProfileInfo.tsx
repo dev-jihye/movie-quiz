@@ -1,16 +1,3 @@
-import { gql } from "@apollo/client";
-
-const SHOW_USER = gql`
-  query Query($showUserId: Int!) {
-    showUser(id: $showUserId) {
-      id
-      email
-      username
-      avatar
-    }
-  }
-`;
-
 export default function ShowProfileInfo({
   data: userData,
   setIsEditable,
@@ -32,7 +19,7 @@ export default function ShowProfileInfo({
                 )
               }
               alt="profile"
-              className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28"
+              className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28 lg:w-32 lg:h-32"
             />
           </div>
         </div>

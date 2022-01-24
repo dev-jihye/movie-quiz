@@ -8,8 +8,8 @@ export default function Comment({ comment }: any) {
   const createdAt = moment(
     moment.unix(Number(comment.createdAt) / 1000)
   ).fromNow();
-  console.log(comment.createdAt);
   const [isEditable, setIsEditable] = useState(false);
+
   return (
     <div>
       <div className="flex items-start mt-4 space-x-4">
@@ -22,11 +22,11 @@ export default function Comment({ comment }: any) {
                 `https://ui-avatars.com/api/?name=${comment.user.username}&color=7F9CF5&background=EBF4FF`
               )
             }
-            alt=""
+            alt="profile"
           />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="overflow-hidden border border-gray-300 rounded-lg shadow-sm ">
+          <div className="overflow-hidden border border-gray-300 rounded-lg shadow-sm">
             <div className="block w-full p-3 border-0 resize-none sm:text-sm">
               <div className="flex mb-2">
                 <p>{comment.user.username}</p>

@@ -2,7 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
-import { USER_FRAGMENT } from "../Fragments";
+import { USER_FRAGMENT } from "../../utils/Fragments";
 
 const SHOW_QUIZ_COMMENTS_QUERY = gql`
   query showQuizComments($id: Int!, $take: Int, $lastId: Int) {
@@ -21,7 +21,7 @@ const SHOW_QUIZ_COMMENTS_QUERY = gql`
 
 export default function CommentSection() {
   const param = useParams();
-  const { loading, error, data, refetch } = useQuery(SHOW_QUIZ_COMMENTS_QUERY, {
+  const { data, refetch } = useQuery(SHOW_QUIZ_COMMENTS_QUERY, {
     variables: {
       id: parseInt(param.id as string),
     },

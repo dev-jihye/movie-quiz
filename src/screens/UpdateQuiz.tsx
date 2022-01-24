@@ -2,12 +2,13 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { SHOW_QUIZ_FRAGMENT } from "../components/Fragments";
+import { SHOW_QUIZ_FRAGMENT } from "../utils/Fragments";
 import Layout from "../components/Layout";
 import { shouldRefetchVar } from "../makeVars/QuizVars";
+import { mainColor } from "../utils/Styles";
 
 const SHOW_QUIZ_QUERY = gql`
-  query showQuiz($id: Int!) {
+  query showQuizForUpdate($id: Int!) {
     showQuiz(id: $id) {
       ...ShowQuizFragment
     }
@@ -63,10 +64,9 @@ export default function EditQuiz() {
 
   useEffect(() => {
     setAnswerType(watch("type"));
-  }, [watch("type")]);
+  }, [watch, watch("type")]);
 
   useEffect(() => {
-    console.log(data, "effect");
     if (data?.showQuiz) {
       const quiz = data.showQuiz;
       setValue("type", quiz.type);
@@ -119,7 +119,6 @@ export default function EditQuiz() {
     const file = files[0];
     setImage(files[0]);
     const imgBlob = URL.createObjectURL(file);
-    console.log(imgBlob);
     setImgPreview(imgBlob);
     setFileExists(true);
   };
@@ -131,13 +130,13 @@ export default function EditQuiz() {
   };
 
   const onCancelClick = () => {
-    const ok = window.confirm("작성 중인 퀴즈가 사라집니다.");
-    if (ok) {
+    const checkDelete = window.confirm("작성 중인 퀴즈가 사라집니다.");
+    if (checkDelete) {
       navigate("/");
     }
   };
   return (
-    <Layout>
+    <Layout loading={loading}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset>
           <div>
@@ -155,7 +154,7 @@ export default function EditQuiz() {
                 name="type"
                 type="radio"
                 value="subjective"
-                className={`w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500`}
+                className={`w-4 h-4 text-[#ef7676] border-gray-300 focus:ring-[#ef7676]`}
               />
               <span className="block ml-3 text-sm font-medium text-gray-700">
                 주관식
@@ -167,7 +166,7 @@ export default function EditQuiz() {
                 name="type"
                 type="radio"
                 value="choice"
-                className="w-4 h-4 ml-6 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                className="w-4 h-4 ml-6 text-[#ef7676] border-gray-300 focus:ring-[#ef7676]"
               />
               <span className="block ml-3 text-sm font-medium text-gray-700">
                 객관식
@@ -186,7 +185,7 @@ export default function EditQuiz() {
             <select
               {...register("genre")}
               id="genre"
-              className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
             >
               <option>액션</option>
               <option>애니메이션</option>
@@ -221,7 +220,7 @@ export default function EditQuiz() {
                   required: true,
                 })}
                 rows={3}
-                className="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                className="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
               />
             </div>
 
@@ -243,7 +242,7 @@ export default function EditQuiz() {
                           {...register("choiceOne")}
                           type="text"
                           id="choice-one"
-                          className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
                         />
                       </div>
                     </div>
@@ -259,7 +258,7 @@ export default function EditQuiz() {
                           {...register("choiceTwo")}
                           type="text"
                           id="choice-two"
-                          className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
                         />
                       </div>
                     </div>
@@ -275,7 +274,7 @@ export default function EditQuiz() {
                           {...register("choiceThree")}
                           type="text"
                           id="choice-three"
-                          className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
                         />
                       </div>
                     </div>
@@ -291,7 +290,7 @@ export default function EditQuiz() {
                           {...register("choiceFour")}
                           type="text"
                           id="choice-four"
-                          className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
                         />
                       </div>
                     </div>
@@ -315,7 +314,7 @@ export default function EditQuiz() {
                     type="text"
                     name="answer"
                     id="answer"
-                    className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
                   />
                 </div>
               </div>
@@ -353,7 +352,7 @@ export default function EditQuiz() {
                             />
                           </svg>
                           <div className="flex justify-center text-sm text-gray-600">
-                            <span className="relative font-medium text-indigo-600 rounded-md">
+                            <span className="relative font-medium text-[#ef7676] rounded-md">
                               <span>이미지 업로드</span>
                             </span>
                           </div>
@@ -371,6 +370,7 @@ export default function EditQuiz() {
                         src={imgPreview}
                         className="object-contain"
                         style={{ height: 400 }}
+                        alt="imgPreview"
                       />
                       <button
                         onClick={onDeleteClick}
@@ -418,11 +418,11 @@ export default function EditQuiz() {
                 </label>
                 <div className="mt-1">
                   <input
-                    {...register("quizHashtags", { required: true })}
+                    {...register("quizHashtags")}
                     type="text"
                     name="quizHashtags"
                     id="quizHashtags"
-                    className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
                     placeholder="#실화배경 #한국영화 #빈칸채우기"
                   />
                 </div>
@@ -435,16 +435,17 @@ export default function EditQuiz() {
             <button
               onClick={onCancelClick}
               type="button"
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ef7676]"
             >
               취소
             </button>
             <button
               type="submit"
-              className={`inline-flex justify-center px-4 py-2 ml-3 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+              className={`inline-flex justify-center px-4 py-2 ml-3 text-sm font-medium text-white border border-transparent rounded-md shadow-sm hover:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                 loading && "opacity-50"
               }`}
               disabled={loading}
+              style={{ background: mainColor.mainColor }}
             >
               {loading ? "저장중" : "저장"}
             </button>

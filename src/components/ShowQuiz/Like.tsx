@@ -36,10 +36,7 @@ export default function Like({ showQuiz }: any) {
     }
   };
 
-  const [
-    toggleQuizLikeMutation,
-    { loading: toggleQuizLikeLoading, error: toggleQuizLikeError },
-  ] = useMutation(TOGGLE_QUIZ_LIKE_MUTATION, {
+  const [toggleQuizLikeMutation] = useMutation(TOGGLE_QUIZ_LIKE_MUTATION, {
     onCompleted,
   });
 

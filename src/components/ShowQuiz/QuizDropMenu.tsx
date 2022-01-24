@@ -22,10 +22,9 @@ export default function QuizDropMenu({ showQuiz }: any) {
     navigate("/");
   };
 
-  const [deleteQuizMutation, { loading: deleteLoading, error: deleteError }] =
-    useMutation(DELETE_QUIZ_MUTATION, {
-      onCompleted: onDeleteCompleted,
-    });
+  const [deleteQuizMutation] = useMutation(DELETE_QUIZ_MUTATION, {
+    onCompleted: onDeleteCompleted,
+  });
 
   const onDeleteClick = () => {
     const ok = window.confirm("퀴즈를 삭제하시겠습니까?");

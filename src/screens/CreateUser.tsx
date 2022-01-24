@@ -28,19 +28,15 @@ export default function CreateUser() {
       navigate(ROUTE.HOME);
     }
   };
-  const [createUserMutation, { loading, error }] = useMutation(
-    CREATE_USER_MUTATION,
-    {
-      onCompleted,
-    }
-  );
+  const [createUserMutation] = useMutation(CREATE_USER_MUTATION, {
+    onCompleted,
+  });
   const onSubmit = (data: any) => {
     createUserMutation({
       variables: {
         ...data,
       },
     });
-    console.log(data);
   };
 
   const clearErrorMsg = () => {
@@ -65,7 +61,7 @@ export default function CreateUser() {
                   htmlFor="username"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Nickname
+                  닉네임
                 </label>
                 <div className="mt-1">
                   <input
@@ -80,7 +76,7 @@ export default function CreateUser() {
                     type="username"
                     autoComplete="username"
                     required
-                    className="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
                     onKeyDown={clearErrorMsg}
                   />
                 </div>
@@ -95,7 +91,7 @@ export default function CreateUser() {
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Email address
+                  이메일
                 </label>
                 <div className="mt-1">
                   <input
@@ -111,7 +107,7 @@ export default function CreateUser() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
                     onKeyDown={clearErrorMsg}
                   />
                 </div>
@@ -126,7 +122,7 @@ export default function CreateUser() {
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Password
+                  비밀번호
                 </label>
                 <div className="mt-1">
                   <input
@@ -142,7 +138,7 @@ export default function CreateUser() {
                     type="password"
                     autoComplete="current-password"
                     required
-                    className="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
                     onKeyDown={clearErrorMsg}
                   />
                 </div>
@@ -158,10 +154,18 @@ export default function CreateUser() {
               <div>
                 <button
                   type="submit"
-                  className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-[#ef7676] border border-transparent rounded-md shadow-sm hover:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ef7676]"
                 >
                   가입하기
                 </button>
+              </div>
+              <div>
+                <Link
+                  to={ROUTE.HOME}
+                  className="block text-sm text-center text-gray-500"
+                >
+                  로그인
+                </Link>
               </div>
             </form>
           </div>

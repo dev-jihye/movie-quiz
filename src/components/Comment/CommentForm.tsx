@@ -2,10 +2,11 @@ import { gql, useMutation, useReactiveVar } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { loginUserVar } from "../../makeVars/UserVars";
-import { USER_FRAGMENT } from "../Fragments";
+import { USER_FRAGMENT } from "../../utils/Fragments";
+import { mainColor } from "../../utils/Styles";
 
 const CREATE_QUIZ_COMMENT_MUTATION = gql`
-  mutation Mutation($id: Int!, $content: String!) {
+  mutation createQuizComment($id: Int!, $content: String!) {
     createQuizComment(id: $id, content: $content) {
       ok
       error
@@ -35,7 +36,7 @@ export default function CommentForm({ refetch }: any) {
       refetch();
     }
   };
-  const [createQuizCommentMutation, { loading, error }] = useMutation(
+  const [createQuizCommentMutation] = useMutation(
     CREATE_QUIZ_COMMENT_MUTATION,
     {
       onCompleted,
@@ -69,7 +70,7 @@ export default function CommentForm({ refetch }: any) {
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className="w-full">
             <div className="flex-1 min-w-0">
-              <div className="overflow-hidden border border-gray-300 rounded-lg shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
+              <div className="overflow-hidden border border-gray-300 rounded-lg shadow-sm">
                 <label htmlFor="comment" className="sr-only">
                   댓글 달기
                 </label>
@@ -86,7 +87,8 @@ export default function CommentForm({ refetch }: any) {
                 <div className="flex-shrink-0">
                   <button
                     type="submit"
-                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm hover:opacity-70 focus:outline-none"
+                    style={{ background: mainColor.mainColor }}
                   >
                     저장
                   </button>

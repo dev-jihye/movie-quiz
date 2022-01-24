@@ -1,12 +1,12 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { gql, useMutation } from "@apollo/client";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { logUserIn } from "../apolloClient";
 import { ROUTE } from "../constance";
 
 const LOGIN_MUTATION = gql`
-  mutation Mutation($email: String!, $password: String!) {
+  mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       ok
       error
@@ -34,11 +34,9 @@ export default function Login() {
         ...data,
       },
     });
-    console.log(data);
   };
 
   const onCompleted = (data: any) => {
-    console.log(data);
     if (!data.login.ok) {
       setErrorMsg(data.login.error);
     } else {
@@ -48,13 +46,12 @@ export default function Login() {
     }
   };
 
-  const [loginMutation, { loading, error }] = useMutation(LOGIN_MUTATION, {
+  const [loginMutation] = useMutation(LOGIN_MUTATION, {
     onCompleted,
   });
 
   return (
     <>
-      {" "}
       <div className="flex flex-col justify-center min-h-full py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <Link to={ROUTE.HOME} className="block text-3xl text-center">
@@ -70,7 +67,7 @@ export default function Login() {
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Email address
+                  이메일
                 </label>
                 <div className="mt-1">
                   <input
@@ -79,7 +76,7 @@ export default function Login() {
                     {...register("email")}
                     autoComplete="email"
                     required
-                    className="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
                   />
                 </div>
               </div>
@@ -88,7 +85,7 @@ export default function Login() {
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Password
+                  비밀번호
                 </label>
                 <div className="mt-1">
                   <input
@@ -98,24 +95,29 @@ export default function Login() {
                     type="password"
                     autoComplete="current-password"
                     required
-                    className="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
                   />
                 </div>
               </div>
+              {errorMsg && (
+                <div className="text-sm text-red-500">{errorMsg}</div>
+              )}
               <div>
                 <button
                   type="submit"
-                  className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-[#ef7676] border border-transparent rounded-md shadow-sm hover:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ef7676]"
                 >
                   로그인
                 </button>
               </div>
-              <Link
-                to={ROUTE.CREATE_USER}
-                className="block text-sm text-center text-gray-500"
-              >
-                회원가입
-              </Link>
+              <div>
+                <Link
+                  to={ROUTE.CREATE_USER}
+                  className="block text-sm text-center text-gray-500"
+                >
+                  회원가입
+                </Link>
+              </div>
             </form>
           </div>
         </div>

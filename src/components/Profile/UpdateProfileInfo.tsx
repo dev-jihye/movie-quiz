@@ -1,6 +1,8 @@
 import { gql, useMutation } from "@apollo/client";
-import { useRef, useState } from "react";
+import { Menu, Transition } from "@headlessui/react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { classNames } from "../../constance";
 
 const UPDATE_USER = gql`
   mutation UpdateUser(
@@ -27,7 +29,7 @@ export default function UpdateProfileInfo({
 }: any) {
   const fileRef = useRef<any>();
   const [imgPreview, setImgPreview] = useState("");
-  const [fileExists, setFileExists] = useState(true);
+  const [fileExists, setFileExists] = useState(false);
   const [image, setImage] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const { register, handleSubmit } = useForm();
@@ -40,7 +42,6 @@ export default function UpdateProfileInfo({
       setIsEditable(true);
       setErrorMsg(data?.updateUser?.error);
     }
-    console.log(data);
   };
 
   const [updateUserMutation] = useMutation(UPDATE_USER, {
@@ -51,11 +52,9 @@ export default function UpdateProfileInfo({
     const {
       target: { files },
     } = event;
-    console.log(files);
     const file = files[0];
-    setImage(files[0]);
+    setImage(file);
     const imgBlob = URL.createObjectURL(file);
-    console.log(imgBlob);
     setImgPreview(imgBlob);
     setFileExists(true);
   };
@@ -71,7 +70,8 @@ export default function UpdateProfileInfo({
     });
   };
 
-  const onDeleteClick = () => {
+  const onDeleteClick = (data: any) => {
+    setImage(null);
     setImgPreview("");
     setFileExists(false);
     fileRef.current.value = "";
@@ -85,6 +85,13 @@ export default function UpdateProfileInfo({
     setErrorMsg("");
   };
 
+  useEffect(() => {
+    if (userData?.me?.avatar?.Location) {
+      setImgPreview(userData?.me?.avatar?.Location);
+      setFileExists(true);
+    }
+  }, [userData]);
+
   return (
     <div className="mb-2">
       <form
@@ -92,28 +99,48 @@ export default function UpdateProfileInfo({
         className="flex items-center w-full"
       >
         <div className="w-1/2 md:w-1/4">
-          <div className="relative">
-            {imgPreview.length < 1 ? (
-              <div className="flex justify-center w-full">
+          <div className="relative flex items-center w-full">
+            <div className="flex justify-center w-full">
+              {/* 파일이 있을 때 */}
+              {fileExists ? (
+                //변경한 프로필 불러오기
                 <img
-                  src={
-                    userData?.me?.avatar?.Location ||
-                    encodeURI(
-                      `https://ui-avatars.com/api/?name=${userData?.me?.username}&color=7F9CF5&background=EBF4FF`
-                    )
-                  }
+                  src={imgPreview}
+                  className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28 lg:w-32 lg:h-32"
                   alt="profile"
-                  className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28"
                 />
-                <label className="relative">
-                  <input
-                    ref={fileRef}
-                    type="file"
-                    accept="image/jpeg, image/png"
-                    className="hidden"
-                    onChange={onFileChange}
-                  />
-                  <div className="absolute bottom-0 right-0">
+              ) : (
+                //파일이 없을 때
+                <>
+                  {/* 이미지 프리뷰가 있을 때 */}
+                  {imgPreview ? (
+                    //기존 프로필
+                    <img
+                      src={
+                        userData?.me?.avatar?.Location ||
+                        encodeURI(
+                          `https://ui-avatars.com/api/?name=${userData?.me?.username}&color=7F9CF5&background=EBF4FF`
+                        )
+                      }
+                      alt="profile"
+                      className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28 lg:w-32 lg:h-32"
+                    />
+                  ) : (
+                    //이미지 프리뷰가 없을 때
+                    <img
+                      //디폴트 프로필
+                      src={encodeURI(
+                        `https://ui-avatars.com/api/?name=${userData?.me?.username}&color=7F9CF5&background=EBF4FF`
+                      )}
+                      className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28 lg:w-32 lg:h-32"
+                      alt="profile"
+                    />
+                  )}
+                </>
+              )}
+              <Menu as="div" className="relative">
+                <div className="absolute right-0">
+                  <Menu.Button className="flex text-sm bg-white rounded-full focus:outline-none">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="w-6 h-6 "
@@ -128,71 +155,65 @@ export default function UpdateProfileInfo({
                         d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                  </div>
-                </label>
-              </div>
-            ) : (
-              <div className="py-8">
-                <div className="relative flex justify-center rounded-lg ">
-                  <img
-                    src={imgPreview}
-                    className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28"
-                  />
-                  <label className="relative">
-                    <button
-                      onClick={onDeleteClick}
-                      type="button"
-                      className="absolute top-0 right-0 inline-flex items-center text-xs font-medium text-red-700 border border-transparent rounded focus:outline-none "
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </button>
-                  </label>
-                  <label className="relative">
-                    <input
-                      ref={fileRef}
-                      type="file"
-                      accept="image/jpeg, image/png"
-                      className="hidden"
-                      onChange={onFileChange}
-                    />
-                    <div className="absolute bottom-0 right-0">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6 "
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="gray"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-                  </label>
+                  </Menu.Button>
                 </div>
-              </div>
-            )}
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-200"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 z-10 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg w-28 ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          type="button"
+                          onClick={onDeleteClick}
+                          className={classNames(
+                            active ? "bg-gray-100" : "",
+                            "w-full text-left block px-4 py-2 text-sm text-gray-700"
+                          )}
+                        >
+                          기본 사진
+                        </button>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <label
+                          htmlFor="profile"
+                          className={classNames(
+                            active ? "bg-gray-100" : "",
+                            " block px-4 py-2 text-sm text-gray-700 w-full text-left relative"
+                          )}
+                        >
+                          새로운 사진
+                        </label>
+                      )}
+                    </Menu.Item>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            </div>
+            <div className="py-8">
+              <div className="relative flex justify-center rounded-lg "></div>
+            </div>
           </div>
         </div>
-        <div className="w-1/2 sm:w-3/4">
+        <div className="w-1/2 md:w-3/4">
           <div className="w-full ml-2 md:ml-4">
             <div className="flex items-center w-full">
+              <input
+                id="profile"
+                ref={fileRef}
+                type="file"
+                accept="image/jpeg, image/png"
+                className="hidden"
+                onChange={onFileChange}
+              />
               <input
                 className="w-full mr-4 text-xl border-b border-gray-400 sm:text-2xl"
                 {...register("username")}

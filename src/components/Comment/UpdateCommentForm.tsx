@@ -1,7 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { USER_FRAGMENT } from "../Fragments";
+import { USER_FRAGMENT } from "../../utils/Fragments";
 import TextareaAutosize from "react-textarea-autosize";
 
 const UPDATE_QUIZ_COMMENT_MUTATION = gql`
@@ -24,22 +24,20 @@ export default function UpdateCommentForm({ comment, setIsEditable }: any) {
   const { register, handleSubmit, setValue } = useForm();
 
   useEffect(() => {
-    console.log(comment, "effect");
     if (comment) {
       setValue("content", comment.content);
     }
   }, [comment]);
 
   const onCompleted = (data: any) => {
-    console.log(data);
     setIsEditable(false);
   };
-  const [
-    updateQuizCommentMutation,
-    { loading: updateLoading, error: updateError },
-  ] = useMutation(UPDATE_QUIZ_COMMENT_MUTATION, {
-    onCompleted,
-  });
+  const [updateQuizCommentMutation] = useMutation(
+    UPDATE_QUIZ_COMMENT_MUTATION,
+    {
+      onCompleted,
+    }
+  );
 
   const onCancelClick = () => {
     setIsEditable(false);

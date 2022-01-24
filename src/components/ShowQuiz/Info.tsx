@@ -9,6 +9,7 @@ export default function Info({ showQuiz }: any) {
               `https://ui-avatars.com/api/?name=${showQuiz?.user?.username}&color=7F9CF5&background=EBF4FF`
             )
           }
+          alt="profile"
           className="object-cover w-10 h-10 rounded-full"
         />
         <span className="ml-3">{showQuiz?.user?.username}</span>

@@ -20,7 +20,7 @@ export default function CommentDelBtn({ comment }: any) {
     apolloClient.cache.gc();
   };
 
-  const [deleteQuizCommentMutation, { loading, error }] = useMutation(
+  const [deleteQuizCommentMutation] = useMutation(
     DELETE_QUIZ_COMMENT_MUTATION,
     {
       onCompleted: onDeleteCompleted,

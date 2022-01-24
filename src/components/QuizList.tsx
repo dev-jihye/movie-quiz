@@ -1,8 +1,9 @@
 import Quiz from "./Quiz";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { isQuizLoadEndVar, shouldRefetchVar } from "../makeVars/QuizVars";
-import { QUIZ_HASHTAGS_FRAGMENT, USER_FRAGMENT } from "./Fragments";
+import { QUIZ_HASHTAGS_FRAGMENT, USER_FRAGMENT } from "../utils/Fragments";
+import { bgColors } from "../utils/BgColors";
 
 const SHOW_QUIZS_QUERY = gql`
   query showQuizs($take: Int, $lastId: Int) {
@@ -24,14 +25,6 @@ const SHOW_QUIZS_QUERY = gql`
 `;
 
 export default function QuizList() {
-  const bgColors = [
-    { bgColor: "#EC6985 ", genreBgColor: "#fdb4b4" },
-    { bgColor: "#EF95A0", genreBgColor: "#ffdada" },
-    { bgColor: "#F4C16F", genreBgColor: "#f9f4d2" },
-    { bgColor: "#529FA8", genreBgColor: "#99dee5" },
-    { bgColor: "#7DCDD3", genreBgColor: "#c8eff3" },
-  ];
-
   const { loading, data, refetch, fetchMore } = useQuery(SHOW_QUIZS_QUERY, {
     variables: { take: 15 },
     onCompleted: () => {

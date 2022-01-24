@@ -1,15 +1,5 @@
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-
-const HomeBtn = styled.button`
-  background: #ef7676;
-  color: #fff;
-`;
-
-const RetryBtn = styled.button`
-  background: #c3c3c3;
-  color: #fff;
-`;
 
 export default function QuizResult({ setIsAnswer, isCorrect, tryError }: any) {
   const navigate = useNavigate();
@@ -17,44 +7,52 @@ export default function QuizResult({ setIsAnswer, isCorrect, tryError }: any) {
   const onHomeClick = () => {
     navigate("/");
   };
+
   return (
     <div>
       {tryError ? (
         <div className="my-16 text-xl text-center sm:my-20 sm:text-3xl">
-          <p className="text-xl font-bold sm:text-3xl">🙅‍♀️ 틀렸습니다 🙅‍♀️</p>
-          <p className="mt-2 text-base sm:text-lg">{tryError}</p>
-          <HomeBtn
-            className="justify-center px-4 py-2 mt-8 text-sm text-gray-500 rounded-md"
+          <motion.div animate={{ scale: [1.5, 1] }}>
+            <p className="text-xl font-bold sm:text-3xl">🙅‍♀️ 틀렸습니다 🙅‍♀️</p>
+            <p className="mt-2 text-base sm:text-lg">{tryError}</p>
+          </motion.div>
+          <button
+            className="justify-center px-4 py-2 mt-8 text-sm rounded-md hover:opacity-70"
             onClick={onHomeClick}
           >
             홈으로 가기
-          </HomeBtn>
-          <RetryBtn
-            className="justify-center px-4 py-2 mt-8 ml-3 text-sm text-gray-500 rounded-md"
+          </button>
+          <button
+            className="bg-[#c3c3c3] text-white justify-center px-4 py-2 mt-8 ml-3 text-sm rounded-md hover:opacity-70"
             onClick={() => {
               setIsAnswer(false);
             }}
           >
             다시 풀기
-          </RetryBtn>
+          </button>
         </div>
       ) : (
-        <div className="block my-12 text-xl font-bold text-center sm:my-20 sm:text-3xl">
-          {isCorrect ? <p>🎉 정답입니다 🎉</p> : <p>🙅‍♀️ 틀렸습니다 🙅‍♀️</p>}
-          <HomeBtn
-            className="justify-center px-4 py-2 mt-8 text-sm text-gray-500 rounded-md"
+        <div className="block my-12 overflow-hidden text-xl font-bold text-center sm:my-20 sm:text-3xl">
+          <motion.div
+            animate={{ scale: [1, 1.5, 1] }}
+            transition={{ duration: 1 }}
+          >
+            {isCorrect ? <p>🎉 정답입니다 🎉</p> : <p>🙅‍♀️ 틀렸습니다 🙅‍♀️</p>}
+          </motion.div>
+          <button
+            className="justify-center px-4 py-2 mt-8 text-sm rounded-md hover:opacity-70 bg-[#ef7676] text-white"
             onClick={onHomeClick}
           >
             홈으로 가기
-          </HomeBtn>
-          <RetryBtn
-            className="justify-center px-4 py-2 mt-8 ml-3 text-sm text-gray-500 rounded-md"
+          </button>
+          <button
+            className="bg-[#c3c3c3] text-white justify-center px-4 py-2 mt-8 ml-3 text-sm rounded-md hover:opacity-70"
             onClick={() => {
               setIsAnswer(false);
             }}
           >
             다시 풀기
-          </RetryBtn>
+          </button>
         </div>
       )}
     </div>

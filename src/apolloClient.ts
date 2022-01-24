@@ -13,7 +13,7 @@ export const logUserIn = (token: string) => {
 };
 export const logUserOut = () => {
   localStorage.removeItem(TOKEN);
-  window.location.reload();
+  window.location.href = "/";
 };
 
 const uploadHttpLink = createUploadLink({

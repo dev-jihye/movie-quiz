@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTE } from "../constance";
+import { createUser, createUserVariables } from "../__generated__/createUser";
 
 const CREATE_USER_MUTATION = gql`
   mutation createUser($email: String!, $username: String!, $password: String!) {
@@ -18,20 +19,20 @@ export default function CreateUser() {
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState } = useForm({
+  const { register, handleSubmit, formState } = useForm<createUserVariables>({
     mode: "onChange",
   });
-  const onCompleted = (data: any) => {
+  const onCompleted = (data: createUser) => {
     if (!data.createUser.ok) {
-      setErrorMsg(data.createUser.error);
+      setErrorMsg(data.createUser.error || "");
     } else {
       navigate(ROUTE.HOME);
     }
   };
-  const [createUserMutation] = useMutation(CREATE_USER_MUTATION, {
+  const [createUserMutation] = useMutation<createUser>(CREATE_USER_MUTATION, {
     onCompleted,
   });
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: createUserVariables) => {
     createUserMutation({
       variables: {
         ...data,

@@ -1,13 +1,17 @@
-export default function Info({ showQuiz }: any) {
+import { getAvatar } from "../../utils/utils";
+import { showQuiz_showQuiz } from "../../__generated__/showQuiz";
+
+interface Iinfo {
+  showQuiz: showQuiz_showQuiz;
+}
+export default function Info({ showQuiz }: Iinfo) {
   return (
     <>
       <div className="flex items-center mb-4">
         <img
           src={
             showQuiz?.user?.avatar?.Location ||
-            encodeURI(
-              `https://ui-avatars.com/api/?name=${showQuiz?.user?.username}&color=7F9CF5&background=EBF4FF`
-            )
+            getAvatar(showQuiz?.user?.username || "")
           }
           alt="profile"
           className="object-cover w-10 h-10 rounded-full"

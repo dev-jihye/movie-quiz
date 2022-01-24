@@ -10,9 +10,10 @@ import ShowProfileInfo from "../components/Profile/ShowProfileInfo";
 import UpdateProfileInfo from "../components/Profile/UpdateProfileInfo";
 import Quiz from "../components/Quiz";
 import { bgColors } from "../utils/BgColors";
+import { showProfile } from "../__generated__/showProfile";
 
-const ME_QUERY = gql`
-  query Me($take: Int) {
+const SHOW_PROFILE_QUERY = gql`
+  query showProfile($take: Int) {
     me {
       ...UserFragment
       quizs(take: $take) {
@@ -33,7 +34,7 @@ const ME_QUERY = gql`
 export default function MyProfile() {
   const [isEditable, setIsEditable] = useState(false);
   const [active, setActive] = useState<number>(0);
-  const { loading, data, refetch } = useQuery(ME_QUERY);
+  const { loading, data, refetch } = useQuery<showProfile>(SHOW_PROFILE_QUERY);
   useEffect(() => {
     refetch();
   }, [data]);
@@ -81,7 +82,7 @@ export default function MyProfile() {
           {active === 0 ? (
             <div className="grid gap-4 pb-4 lg:grid-cols-3 ">
               {data?.me?.quizs.length === 0 && <p>내가 낸 문제가 없습니다.</p>}
-              {data?.me?.quizs?.map((post: any, index: number) => {
+              {data?.me?.quizs?.map((post, index) => {
                 let bgIndex = 0;
                 if (index > bgColors.length - 1) {
                   bgIndex =
@@ -97,7 +98,7 @@ export default function MyProfile() {
           ) : (
             <div className="grid gap-4 pb-4 lg:grid-cols-3 ">
               {data?.me?.quizTries.length === 0 && <p>도전 문제가 없습니다.</p>}
-              {data?.me?.quizTries?.map((post: any, index: number) => {
+              {data?.me?.quizTries?.map((post, index) => {
                 let bgIndex = 0;
                 if (index > bgColors.length - 1) {
                   bgIndex =

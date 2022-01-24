@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom";
 import { loginUserVar } from "../../makeVars/UserVars";
 import { USER_FRAGMENT } from "../../utils/Fragments";
 import { mainColor } from "../../utils/Styles";
+import { getAvatar } from "../../utils/utils";
+import { createQuizComment } from "../../__generated__/createQuizComment";
 
 const CREATE_QUIZ_COMMENT_MUTATION = gql`
   mutation createQuizComment($id: Int!, $content: String!) {
@@ -22,28 +24,34 @@ const CREATE_QUIZ_COMMENT_MUTATION = gql`
   }
   ${USER_FRAGMENT}
 `;
+interface IcommentForm {
+  refetch: Function;
+}
+interface IuseForm {
+  comment: string;
+}
 
-export default function CommentForm({ refetch }: any) {
+export default function CommentForm({ refetch }: IcommentForm) {
   const loginUser = useReactiveVar(loginUserVar);
   const param = useParams();
-  const { register, handleSubmit, setValue } = useForm({
+  const { register, handleSubmit, setValue } = useForm<IuseForm>({
     defaultValues: {
       comment: "",
     },
   });
-  const onCompleted = (data: any) => {
+  const onCompleted = (data: createQuizComment) => {
     if (data?.createQuizComment?.ok) {
       refetch();
     }
   };
-  const [createQuizCommentMutation] = useMutation(
+  const [createQuizCommentMutation] = useMutation<createQuizComment>(
     CREATE_QUIZ_COMMENT_MUTATION,
     {
       onCompleted,
     }
   );
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: IuseForm) => {
     createQuizCommentMutation({
       variables: {
         id: parseInt(param.id as string),
@@ -61,9 +69,7 @@ export default function CommentForm({ refetch }: any) {
               className="inline-block object-cover w-10 h-10 rounded-full"
               src={
                 loginUser?.me?.avatar?.Location ||
-                encodeURI(
-                  `https://ui-avatars.com/api/?name=${loginUser?.me?.username}&color=7F9CF5&background=EBF4FF`
-                )
+                getAvatar(loginUser?.me?.username || "")
               }
               alt=""
             />

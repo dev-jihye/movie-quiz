@@ -1,7 +1,14 @@
+import { Dispatch, SetStateAction } from "react";
+import { getAvatar } from "../../utils/utils";
+import { showProfile } from "../../__generated__/showProfile";
+interface IshowProfileInfo {
+  data: showProfile | undefined;
+  setIsEditable: Dispatch<SetStateAction<boolean>>;
+}
 export default function ShowProfileInfo({
   data: userData,
   setIsEditable,
-}: any) {
+}: IshowProfileInfo) {
   const onEditClick = () => {
     setIsEditable(true);
   };
@@ -14,9 +21,7 @@ export default function ShowProfileInfo({
             <img
               src={
                 userData?.me?.avatar?.Location ||
-                encodeURI(
-                  `https://ui-avatars.com/api/?name=${userData?.me?.username}&color=7F9CF5&background=EBF4FF`
-                )
+                getAvatar(userData?.me?.username || "")
               }
               alt="profile"
               className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28 lg:w-32 lg:h-32"

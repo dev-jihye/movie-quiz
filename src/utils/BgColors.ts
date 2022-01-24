@@ -1,3 +1,8 @@
+export interface IbgColors {
+  bgColor: string;
+  genreBgColor: string;
+}
+
 export const bgColors = [
   { bgColor: "#EC6985 ", genreBgColor: "#fdb4b4" },
   { bgColor: "#EF95A0", genreBgColor: "#ffdada" },

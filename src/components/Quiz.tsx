@@ -1,9 +1,17 @@
 import { Link } from "react-router-dom";
 import { ROUTE } from "../constance";
 import { motion } from "framer-motion";
+import { showQuizs_showQuizs } from "../__generated__/showQuizs";
+import { IbgColors } from "../utils/BgColors";
+import { getAvatar } from "../utils/utils";
 
-export default function Quiz({ post, bgColor }: any) {
-  const hashtags = post.quizHashtags.map((item: any) => item.hashtag);
+interface Iquiz {
+  post: showQuizs_showQuizs;
+  bgColor: IbgColors;
+}
+
+export default function Quiz({ post, bgColor }: Iquiz) {
+  const hashtags = post.quizHashtags?.map((item) => item.hashtag);
 
   return (
     <motion.div
@@ -30,23 +38,21 @@ export default function Quiz({ post, bgColor }: any) {
               {post.genre}
             </span>
           </div>
-          <p className="mx-4 mt-4 font-semibold">{hashtags.join(" ")}</p>
+          <p className="mx-4 mt-4 font-semibold">{hashtags?.join(" ")}</p>
           <div className="flex items-center mx-4 mt-6">
             <div className="flex-shrink-0">
-              <span className="sr-only">{post.user.username}</span>
+              <span className="sr-only">{post.user?.username}</span>
               <img
                 className="object-cover rounded-full w-9 h-9"
                 src={
                   post?.user?.avatar?.Location ||
-                  encodeURI(
-                    `https://ui-avatars.com/api/?name=${post.user.username}&color=7F9CF5&background=EBF4FF`
-                  )
+                  getAvatar(post.user?.username || "")
                 }
                 alt=""
               />
             </div>
             <div className="ml-2">
-              <p className="text-sm font-medium ">{post.user.username}</p>
+              <p className="text-sm font-medium ">{post.user?.username}</p>
             </div>
           </div>
           <div className="flex items-center justify-between m-4 mt-3 space-x-1 text-sm">

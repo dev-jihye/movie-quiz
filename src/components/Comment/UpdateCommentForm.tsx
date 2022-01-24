@@ -1,11 +1,13 @@
 import { gql, useMutation } from "@apollo/client";
-import { useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { USER_FRAGMENT } from "../../utils/Fragments";
 import TextareaAutosize from "react-textarea-autosize";
+import { showQuizComments_showQuizComments } from "../../__generated__/showQuizComments";
+import { updateQuizComment } from "../../__generated__/updateQuizComment";
 
 const UPDATE_QUIZ_COMMENT_MUTATION = gql`
-  mutation UpdateQuizComment($id: Int!, $content: String!) {
+  mutation updateQuizComment($id: Int!, $content: String!) {
     updateQuizComment(id: $id, content: $content) {
       ok
       error
@@ -20,8 +22,20 @@ const UPDATE_QUIZ_COMMENT_MUTATION = gql`
   }
   ${USER_FRAGMENT}
 `;
-export default function UpdateCommentForm({ comment, setIsEditable }: any) {
-  const { register, handleSubmit, setValue } = useForm();
+
+interface IupdateCommentForm {
+  comment: showQuizComments_showQuizComments;
+  setIsEditable: Dispatch<SetStateAction<boolean>>;
+}
+
+interface IuseForm {
+  content: string;
+}
+export default function UpdateCommentForm({
+  comment,
+  setIsEditable,
+}: IupdateCommentForm) {
+  const { register, handleSubmit, setValue } = useForm<IuseForm>();
 
   useEffect(() => {
     if (comment) {
@@ -29,10 +43,10 @@ export default function UpdateCommentForm({ comment, setIsEditable }: any) {
     }
   }, [comment]);
 
-  const onCompleted = (data: any) => {
+  const onCompleted = () => {
     setIsEditable(false);
   };
-  const [updateQuizCommentMutation] = useMutation(
+  const [updateQuizCommentMutation] = useMutation<updateQuizComment>(
     UPDATE_QUIZ_COMMENT_MUTATION,
     {
       onCompleted,
@@ -43,7 +57,7 @@ export default function UpdateCommentForm({ comment, setIsEditable }: any) {
     setIsEditable(false);
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: IuseForm) => {
     updateQuizCommentMutation({
       variables: {
         id: comment.id,

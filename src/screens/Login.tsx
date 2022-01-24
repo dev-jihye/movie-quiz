@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { logUserIn } from "../apolloClient";
 import { ROUTE } from "../constance";
+import { login, loginVariables } from "../__generated__/login";
 
 const LOGIN_MUTATION = gql`
   mutation login($email: String!, $password: String!) {
@@ -15,20 +16,14 @@ const LOGIN_MUTATION = gql`
   }
 `;
 
-interface ILoginUsers {
-  data: any;
-  error: any;
-  loading: any;
-}
-
 export default function Login() {
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
-  const { register, handleSubmit, formState } = useForm({
+  const { register, handleSubmit } = useForm<loginVariables>({
     mode: "onChange",
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: loginVariables) => {
     loginMutation({
       variables: {
         ...data,
@@ -36,17 +31,19 @@ export default function Login() {
     });
   };
 
-  const onCompleted = (data: any) => {
+  const onCompleted = (data: login) => {
     if (!data.login.ok) {
-      setErrorMsg(data.login.error);
+      setErrorMsg(data.login.error || "");
     } else {
       const token = data.login.token;
-      logUserIn(token);
-      navigate(ROUTE.HOME);
+      if (token) {
+        logUserIn(token);
+        navigate(ROUTE.HOME);
+      }
     }
   };
 
-  const [loginMutation] = useMutation(LOGIN_MUTATION, {
+  const [loginMutation] = useMutation<login>(LOGIN_MUTATION, {
     onCompleted,
   });
 

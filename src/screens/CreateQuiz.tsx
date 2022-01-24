@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Layout from "../components/Layout";
 import { useForm } from "react-hook-form";
 import { gql, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { shouldRefetchVar } from "../makeVars/QuizVars";
+import { createQuiz } from "../__generated__/createQuiz";
 
 const CREATE_QUIZ_MUTATION = gql`
   mutation createQuiz(
@@ -30,13 +31,25 @@ const CREATE_QUIZ_MUTATION = gql`
   }
 `;
 
+interface IcreateQuizForm {
+  type: string;
+  genre: string;
+  content: string;
+  choiceOne: string;
+  choiceTwo: string;
+  choiceThree: string;
+  choiceFour: string;
+  answer: string;
+  quizHashtags: string;
+}
+
 export default function CreateQuiz() {
   const fileRef = useRef<any>();
   const [imgPreview, setImgPreview] = useState("");
   const [answerType, setAnswerType] = useState("subjective");
-  const [image, setImage] = useState<any>(null);
+  const [image, setImage] = useState<File | null>(null);
   const navigate = useNavigate();
-  const { register, handleSubmit, watch } = useForm({
+  const { register, handleSubmit, watch } = useForm<IcreateQuizForm>({
     defaultValues: {
       type: "subjective",
       genre: "액션",
@@ -55,16 +68,19 @@ export default function CreateQuiz() {
     setAnswerType(watch("type"));
   }, [watch("type")]);
 
-  const onCompleted = (data: any) => {
+  const onCompleted = () => {
     shouldRefetchVar(true);
     navigate("/");
   };
 
-  const [createQuizMutation, { loading }] = useMutation(CREATE_QUIZ_MUTATION, {
-    onCompleted,
-  });
+  const [createQuizMutation, { loading }] = useMutation<createQuiz>(
+    CREATE_QUIZ_MUTATION,
+    {
+      onCompleted,
+    }
+  );
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: IcreateQuizForm) => {
     createQuizMutation({
       variables: {
         ...data,
@@ -79,14 +95,16 @@ export default function CreateQuiz() {
     });
   };
 
-  const onFileChange = (event: any) => {
+  const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { files },
     } = event;
-    const file = files[0];
-    setImage(files[0]);
-    const imgBlob = URL.createObjectURL(file);
-    setImgPreview(imgBlob);
+    const file = files && files[0];
+    if (file) {
+      setImage(files[0]);
+      const imgBlob = URL.createObjectURL(file);
+      setImgPreview(imgBlob);
+    }
   };
 
   const onDeleteClick = () => {

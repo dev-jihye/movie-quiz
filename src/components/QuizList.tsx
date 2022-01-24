@@ -4,6 +4,7 @@ import { gql, useQuery } from "@apollo/client";
 import { isQuizLoadEndVar, shouldRefetchVar } from "../makeVars/QuizVars";
 import { QUIZ_HASHTAGS_FRAGMENT, USER_FRAGMENT } from "../utils/Fragments";
 import { bgColors } from "../utils/BgColors";
+import { showQuizs } from "../__generated__/showQuizs";
 
 const SHOW_QUIZS_QUERY = gql`
   query showQuizs($take: Int, $lastId: Int) {
@@ -25,12 +26,15 @@ const SHOW_QUIZS_QUERY = gql`
 `;
 
 export default function QuizList() {
-  const { loading, data, refetch, fetchMore } = useQuery(SHOW_QUIZS_QUERY, {
-    variables: { take: 15 },
-    onCompleted: () => {
-      isQuizLoadEndVar(false);
-    },
-  });
+  const { loading, data, refetch, fetchMore } = useQuery<showQuizs>(
+    SHOW_QUIZS_QUERY,
+    {
+      variables: { take: 15 },
+      onCompleted: () => {
+        isQuizLoadEndVar(false);
+      },
+    }
+  );
 
   const loaderRef = useRef<any>();
 
@@ -43,7 +47,7 @@ export default function QuizList() {
       const target = entries[0];
       if (data?.showQuizs && target.isIntersecting) {
         const lastId = data.showQuizs[data.showQuizs.length - 1].id;
-        const more: any = await fetchMore({
+        const more = await fetchMore({
           variables: {
             lastId,
           },
@@ -79,7 +83,7 @@ export default function QuizList() {
 
   return loading ? null : (
     <div className="grid gap-4 pb-4 lg:grid-cols-3 ">
-      {data?.showQuizs?.map((post: any, index: number) => {
+      {data?.showQuizs?.map((post, index) => {
         let bgIndex = 0;
         if (index > bgColors.length - 1) {
           bgIndex =

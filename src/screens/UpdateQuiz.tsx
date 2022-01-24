@@ -1,11 +1,13 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { SHOW_QUIZ_FRAGMENT } from "../utils/Fragments";
 import Layout from "../components/Layout";
 import { shouldRefetchVar } from "../makeVars/QuizVars";
 import { mainColor } from "../utils/Styles";
+import { showQuizForUpdate } from "../__generated__/showQuizForUpdate";
+import { updateQuiz, updateQuizVariables } from "../__generated__/updateQuiz";
 
 const SHOW_QUIZ_QUERY = gql`
   query showQuizForUpdate($id: Int!) {
@@ -45,25 +47,40 @@ const UPDATE_QUIZ_MUTATION = gql`
   }
 `;
 
+interface IupdateQuizForm {
+  type: string;
+  genre: string;
+  content: string;
+  choiceOne: string;
+  choiceTwo: string;
+  choiceThree: string;
+  choiceFour: string;
+  answer: string;
+  quizHashtags: string;
+}
+
 export default function EditQuiz() {
   const fileRef = useRef<any>();
   const [answerType, setAnswerType] = useState("subjective");
   const [imgPreview, setImgPreview] = useState("");
   const [fileExists, setFileExists] = useState(true);
-  const [image, setImage] = useState<any>(null);
+  const [image, setImage] = useState<File | null>(null);
   const navigate = useNavigate();
   const param = useParams();
-  const { loading, data } = useQuery(SHOW_QUIZ_QUERY, {
+  const { loading, data } = useQuery<showQuizForUpdate>(SHOW_QUIZ_QUERY, {
     variables: {
       id: parseInt(param.id as string),
     },
   });
-  const { register, handleSubmit, watch, setValue } = useForm({
+  const { register, handleSubmit, watch, setValue } = useForm<IupdateQuizForm>({
     mode: "onChange",
   });
 
   useEffect(() => {
-    setAnswerType(watch("type"));
+    const type = watch("type");
+    if (type) {
+      setAnswerType(type);
+    }
   }, [watch, watch("type")]);
 
   useEffect(() => {
@@ -72,14 +89,16 @@ export default function EditQuiz() {
       setValue("type", quiz.type);
       setValue("genre", quiz.genre);
       setValue("content", quiz.content);
-      setValue("choiceOne", quiz.choice[0]);
-      setValue("choiceTwo", quiz.choice[1]);
-      setValue("choiceThree", quiz.choice[2]);
-      setValue("choiceFour", quiz.choice[3]);
+      if (quiz.choice) {
+        setValue("choiceOne", quiz.choice[0] || "");
+        setValue("choiceTwo", quiz.choice[1] || "");
+        setValue("choiceThree", quiz.choice[2] || "");
+        setValue("choiceFour", quiz.choice[3] || "");
+      }
       setValue("answer", quiz.answer);
       setValue(
         "quizHashtags",
-        quiz.quizHashtags?.map((tag: any) => tag.hashtag).join(" ")
+        quiz.quizHashtags?.map((tag) => tag.hashtag).join(" ") || ""
       );
       if (quiz.image) {
         setImgPreview(quiz.image.Location);
@@ -87,16 +106,16 @@ export default function EditQuiz() {
     }
   }, [data]);
 
-  const onCompleted = (data: any) => {
+  const onCompleted = () => {
     shouldRefetchVar(true);
     navigate("/");
   };
 
-  const [updateQuizMutation] = useMutation(UPDATE_QUIZ_MUTATION, {
+  const [updateQuizMutation] = useMutation<updateQuiz>(UPDATE_QUIZ_MUTATION, {
     onCompleted,
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: IupdateQuizForm) => {
     updateQuizMutation({
       variables: {
         id: parseInt(param.id as string),
@@ -112,15 +131,17 @@ export default function EditQuiz() {
       },
     });
   };
-  const onFileChange = (event: any) => {
+  const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { files },
     } = event;
-    const file = files[0];
-    setImage(files[0]);
-    const imgBlob = URL.createObjectURL(file);
-    setImgPreview(imgBlob);
-    setFileExists(true);
+    const file = files && files[0];
+    if (file) {
+      setImage(files[0]);
+      const imgBlob = URL.createObjectURL(file);
+      setImgPreview(imgBlob);
+      setFileExists(true);
+    }
   };
 
   const onDeleteClick = () => {

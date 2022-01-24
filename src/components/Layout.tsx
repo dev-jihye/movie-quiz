@@ -6,7 +6,7 @@ import Loading from "./Loading";
 import Nav from "./Nav";
 
 interface ILayout {
-  children: ReactChild | ReactChildren;
+  children: ReactChild | ReactChildren | undefined | null;
   loading?: boolean;
 }
 

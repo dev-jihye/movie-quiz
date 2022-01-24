@@ -4,19 +4,19 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: DeleteQuizComment
+// GraphQL mutation operation: deleteQuizComment
 // ====================================================
 
-export interface DeleteQuizComment_deleteQuizComment {
+export interface deleteQuizComment_deleteQuizComment {
   __typename: "MutationResult";
   ok: boolean;
   error: string | null;
 }
 
-export interface DeleteQuizComment {
-  deleteQuizComment: DeleteQuizComment_deleteQuizComment;
+export interface deleteQuizComment {
+  deleteQuizComment: deleteQuizComment_deleteQuizComment;
 }
 
-export interface DeleteQuizCommentVariables {
+export interface deleteQuizCommentVariables {
   id: number;
 }

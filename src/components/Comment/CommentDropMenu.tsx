@@ -1,9 +1,18 @@
 import { Menu, Transition } from "@headlessui/react";
-import { Fragment } from "react";
+import { Dispatch, Fragment, SetStateAction } from "react";
+import { showQuizComments_showQuizComments } from "../../__generated__/showQuizComments";
 import CommentDelBtn from "./CommentDelBtn";
 import CommentEditBtn from "./CommentEditBtn";
 
-export default function CommentDropMenu({ comment, setIsEditable }: any) {
+interface IcommentDropMenu {
+  comment: showQuizComments_showQuizComments;
+  setIsEditable: Dispatch<SetStateAction<boolean>>;
+}
+
+export default function CommentDropMenu({
+  comment,
+  setIsEditable,
+}: IcommentDropMenu) {
   return (
     <>
       {comment?.isMine === true ? (
@@ -44,10 +53,7 @@ export default function CommentDropMenu({ comment, setIsEditable }: any) {
             >
               <Menu.Items className="absolute right-0 z-10 w-16 mt-2 text-center origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div className="py-1">
-                  <CommentEditBtn
-                    comment={comment}
-                    setIsEditable={setIsEditable}
-                  />
+                  <CommentEditBtn setIsEditable={setIsEditable} />
                   <CommentDelBtn comment={comment} />
                 </div>
               </Menu.Items>

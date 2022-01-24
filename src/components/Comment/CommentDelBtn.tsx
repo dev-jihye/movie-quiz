@@ -2,9 +2,11 @@ import { gql, useMutation } from "@apollo/client";
 import { Menu } from "@headlessui/react";
 import { apolloClient } from "../../apolloClient";
 import { classNames } from "../../constance";
+import { deleteQuizComment } from "../../__generated__/deleteQuizComment";
+import { showQuizComments_showQuizComments } from "../../__generated__/showQuizComments";
 
 const DELETE_QUIZ_COMMENT_MUTATION = gql`
-  mutation DeleteQuizComment($id: Int!) {
+  mutation deleteQuizComment($id: Int!) {
     deleteQuizComment(id: $id) {
       ok
       error
@@ -12,15 +14,18 @@ const DELETE_QUIZ_COMMENT_MUTATION = gql`
   }
 `;
 
-export default function CommentDelBtn({ comment }: any) {
-  const onDeleteCompleted = (data: any) => {
+interface IcommentDelBtn {
+  comment: showQuizComments_showQuizComments;
+}
+export default function CommentDelBtn({ comment }: IcommentDelBtn) {
+  const onDeleteCompleted = () => {
     apolloClient.cache.evict({
       id: `QuizComment:${comment.id}`,
     });
     apolloClient.cache.gc();
   };
 
-  const [deleteQuizCommentMutation] = useMutation(
+  const [deleteQuizCommentMutation] = useMutation<deleteQuizComment>(
     DELETE_QUIZ_COMMENT_MUTATION,
     {
       onCompleted: onDeleteCompleted,

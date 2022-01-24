@@ -1,9 +1,12 @@
 import { gql, useMutation } from "@apollo/client";
 import { Menu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { classNames, ROUTE } from "../../constance";
 import { shouldRefetchVar } from "../../makeVars/QuizVars";
+import { deleteQuiz } from "../../__generated__/deleteQuiz";
+import { showQuiz_showQuiz } from "../../__generated__/showQuiz";
 
 const DELETE_QUIZ_MUTATION = gql`
   mutation deleteQuiz($deleteQuizId: Int!) {
@@ -14,15 +17,19 @@ const DELETE_QUIZ_MUTATION = gql`
   }
 `;
 
-export default function QuizDropMenu({ showQuiz }: any) {
+interface IquizDropMenu {
+  showQuiz: showQuiz_showQuiz;
+}
+
+export default function QuizDropMenu({ showQuiz }: IquizDropMenu) {
   const navigate = useNavigate();
   const param = useParams();
-  const onDeleteCompleted = (data: any) => {
+  const onDeleteCompleted = () => {
     shouldRefetchVar(true);
     navigate("/");
   };
 
-  const [deleteQuizMutation] = useMutation(DELETE_QUIZ_MUTATION, {
+  const [deleteQuizMutation] = useMutation<deleteQuiz>(DELETE_QUIZ_MUTATION, {
     onCompleted: onDeleteCompleted,
   });
 

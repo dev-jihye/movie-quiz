@@ -4,28 +4,28 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UpdateUser
+// GraphQL mutation operation: updateUser
 // ====================================================
 
-export interface UpdateUser_updateUser_user {
+export interface updateUser_updateUser_user {
   __typename: "User";
   id: number;
   email: string;
   username: string;
 }
 
-export interface UpdateUser_updateUser {
+export interface updateUser_updateUser {
   __typename: "UpdateUserResult";
   ok: boolean;
   error: string | null;
-  user: UpdateUser_updateUser_user | null;
+  user: updateUser_updateUser_user | null;
 }
 
-export interface UpdateUser {
-  updateUser: UpdateUser_updateUser;
+export interface updateUser {
+  updateUser: updateUser_updateUser;
 }
 
-export interface UpdateUserVariables {
+export interface updateUserVariables {
   username?: string | null;
   avatar?: any | null;
   fileExists: boolean;

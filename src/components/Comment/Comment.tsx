@@ -3,8 +3,13 @@ import CommentDropMenu from "./CommentDropMenu";
 import UpdateCommentForm from "./UpdateCommentForm";
 import moment from "moment";
 import "moment/locale/ko";
+import { getAvatar } from "../../utils/utils";
+import { showQuizComments_showQuizComments } from "../../__generated__/showQuizComments";
 
-export default function Comment({ comment }: any) {
+interface Icomment {
+  comment: showQuizComments_showQuizComments;
+}
+export default function Comment({ comment }: Icomment) {
   const createdAt = moment(
     moment.unix(Number(comment.createdAt) / 1000)
   ).fromNow();
@@ -18,9 +23,7 @@ export default function Comment({ comment }: any) {
             className="inline-block object-cover w-10 h-10 rounded-full"
             src={
               comment?.user?.avatar?.Location ||
-              encodeURI(
-                `https://ui-avatars.com/api/?name=${comment.user.username}&color=7F9CF5&background=EBF4FF`
-              )
+              getAvatar(comment.user.username || "")
             }
             alt="profile"
           />

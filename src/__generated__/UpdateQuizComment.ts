@@ -4,35 +4,35 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UpdateQuizComment
+// GraphQL mutation operation: updateQuizComment
 // ====================================================
 
-export interface UpdateQuizComment_updateQuizComment_comment_user {
+export interface updateQuizComment_updateQuizComment_comment_user {
   __typename: "User";
   id: number;
   username: string;
   avatar: any | null;
 }
 
-export interface UpdateQuizComment_updateQuizComment_comment {
+export interface updateQuizComment_updateQuizComment_comment {
   __typename: "QuizComment";
   id: number;
-  user: UpdateQuizComment_updateQuizComment_comment_user;
+  user: updateQuizComment_updateQuizComment_comment_user;
   content: string;
 }
 
-export interface UpdateQuizComment_updateQuizComment {
+export interface updateQuizComment_updateQuizComment {
   __typename: "UpdateQuizCommentResult";
   ok: boolean;
   error: string | null;
-  comment: UpdateQuizComment_updateQuizComment_comment | null;
+  comment: updateQuizComment_updateQuizComment_comment | null;
 }
 
-export interface UpdateQuizComment {
-  updateQuizComment: UpdateQuizComment_updateQuizComment;
+export interface updateQuizComment {
+  updateQuizComment: updateQuizComment_updateQuizComment;
 }
 
-export interface UpdateQuizCommentVariables {
+export interface updateQuizCommentVariables {
   id: number;
   content: string;
 }

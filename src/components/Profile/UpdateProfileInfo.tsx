@@ -1,11 +1,21 @@
 import { gql, useMutation } from "@apollo/client";
 import { Menu, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  Fragment,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import { classNames } from "../../constance";
+import { getAvatar } from "../../utils/utils";
+import { showProfile } from "../../__generated__/showProfile";
+import { updateUser } from "../../__generated__/updateUser";
 
 const UPDATE_USER = gql`
-  mutation UpdateUser(
+  mutation updateUser(
     $username: String
     $avatar: Upload
     $fileExists: Boolean!
@@ -22,44 +32,58 @@ const UPDATE_USER = gql`
   }
 `;
 
+interface IuseForm {
+  username: string;
+}
+
+interface IupdateProfileInfo {
+  data: showProfile | undefined;
+  setIsEditable: Dispatch<SetStateAction<boolean>>;
+  refetch: Function;
+}
+
 export default function UpdateProfileInfo({
   data: userData,
   setIsEditable,
   refetch,
-}: any) {
+}: IupdateProfileInfo) {
   const fileRef = useRef<any>();
   const [imgPreview, setImgPreview] = useState("");
   const [fileExists, setFileExists] = useState(false);
-  const [image, setImage] = useState<any>(null);
+  const [image, setImage] = useState<File | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm<IuseForm>();
 
-  const onCompleted = (data: any) => {
+  const onCompleted = (data: updateUser) => {
     if (data?.updateUser?.ok) {
       setIsEditable(false);
       refetch();
     } else {
       setIsEditable(true);
-      setErrorMsg(data?.updateUser?.error);
+      if (data?.updateUser?.error) {
+        setErrorMsg(data?.updateUser?.error);
+      }
     }
   };
 
-  const [updateUserMutation] = useMutation(UPDATE_USER, {
+  const [updateUserMutation] = useMutation<updateUser>(UPDATE_USER, {
     onCompleted,
   });
 
-  const onFileChange = (event: any) => {
+  const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { files },
     } = event;
-    const file = files[0];
-    setImage(file);
-    const imgBlob = URL.createObjectURL(file);
-    setImgPreview(imgBlob);
-    setFileExists(true);
+    const file = files && files[0];
+    if (file) {
+      setImage(file);
+      const imgBlob = URL.createObjectURL(file);
+      setImgPreview(imgBlob);
+      setFileExists(true);
+    }
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: IuseForm) => {
     updateUserMutation({
       variables: {
         username:
@@ -70,7 +94,7 @@ export default function UpdateProfileInfo({
     });
   };
 
-  const onDeleteClick = (data: any) => {
+  const onDeleteClick = () => {
     setImage(null);
     setImgPreview("");
     setFileExists(false);
@@ -118,9 +142,7 @@ export default function UpdateProfileInfo({
                     <img
                       src={
                         userData?.me?.avatar?.Location ||
-                        encodeURI(
-                          `https://ui-avatars.com/api/?name=${userData?.me?.username}&color=7F9CF5&background=EBF4FF`
-                        )
+                        getAvatar(userData?.me?.username || "")
                       }
                       alt="profile"
                       className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28 lg:w-32 lg:h-32"
@@ -129,9 +151,7 @@ export default function UpdateProfileInfo({
                     //이미지 프리뷰가 없을 때
                     <img
                       //디폴트 프로필
-                      src={encodeURI(
-                        `https://ui-avatars.com/api/?name=${userData?.me?.username}&color=7F9CF5&background=EBF4FF`
-                      )}
+                      src={getAvatar(userData?.me?.username || "")}
                       className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28 lg:w-32 lg:h-32"
                       alt="profile"
                     />
@@ -222,9 +242,7 @@ export default function UpdateProfileInfo({
               />
             </div>
           </div>
-          {!userData?.updateUser?.ok && (
-            <p className="ml-4 text-sm text-red-600">{errorMsg}</p>
-          )}
+          {errorMsg && <p className="ml-4 text-sm text-red-600">{errorMsg}</p>}
           <div className="flex mt-4 ml-2 md:ml-4">
             <div>
               <p className="mb-2 text-sm sm:text-base">도전 문제</p>

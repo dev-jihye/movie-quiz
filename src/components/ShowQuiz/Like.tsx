@@ -1,6 +1,8 @@
 import { gql, useMutation } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { apolloClient } from "../../apolloClient";
+import { showQuiz_showQuiz } from "../../__generated__/showQuiz";
+import { toggleQuizLike } from "../../__generated__/toggleQuizLike";
 
 const TOGGLE_QUIZ_LIKE_MUTATION = gql`
   mutation toggleQuizLike($id: Int!) {
@@ -11,10 +13,14 @@ const TOGGLE_QUIZ_LIKE_MUTATION = gql`
   }
 `;
 
-export default function Like({ showQuiz }: any) {
+interface Ilike {
+  showQuiz: showQuiz_showQuiz;
+}
+
+export default function Like({ showQuiz }: Ilike) {
   const param = useParams();
 
-  const onCompleted = (data: any) => {
+  const onCompleted = (data: toggleQuizLike) => {
     if (data.toggleQuizLike?.ok) {
       apolloClient.cache.modify({
         id: `Quiz:${showQuiz.id}`,
@@ -36,9 +42,12 @@ export default function Like({ showQuiz }: any) {
     }
   };
 
-  const [toggleQuizLikeMutation] = useMutation(TOGGLE_QUIZ_LIKE_MUTATION, {
-    onCompleted,
-  });
+  const [toggleQuizLikeMutation] = useMutation<toggleQuizLike>(
+    TOGGLE_QUIZ_LIKE_MUTATION,
+    {
+      onCompleted,
+    }
+  );
 
   const onHeartClick = () => {
     toggleQuizLikeMutation({

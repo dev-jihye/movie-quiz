@@ -2,14 +2,11 @@ import { Fragment, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
 import { Link, useLocation } from "react-router-dom";
-import { ROUTE } from "../constance";
+import { classNames, ROUTE } from "../constance";
 import { isLoggedInVar, logUserOut } from "../apolloClient";
 import useUser from "../hooks/useUser";
 import { loginUserVar } from "../makeVars/UserVars";
-
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
-}
+import { getAvatar } from "../utils/utils";
 
 const navigation = [
   { name: "모두의 퀴즈", href: ROUTE.HOME },
@@ -80,9 +77,7 @@ export default function Nav() {
                           className="object-cover w-8 h-8 rounded-full"
                           src={
                             data?.me?.avatar?.Location ||
-                            encodeURI(
-                              `https://ui-avatars.com/api/?name=${data?.me?.username}&color=7F9CF5&background=EBF4FF`
-                            )
+                            getAvatar(data?.me?.username || "")
                           }
                           alt="profile"
                         />
@@ -154,7 +149,7 @@ export default function Nav() {
 
           <Disclosure.Panel className="sm:hidden">
             <div className="pt-2 pb-3 space-y-1">
-              {navigation.map((item: any, index: number) => (
+              {navigation.map((item, index) => (
                 <Link to={item.href} key={index}>
                   <Disclosure.Button
                     as="div"
@@ -176,9 +171,7 @@ export default function Nav() {
                     className="object-cover w-10 h-10 rounded-full"
                     src={
                       data?.me?.avatar?.Location ||
-                      encodeURI(
-                        `https://ui-avatars.com/api/?name=${data?.me?.username}&color=7F9CF5&background=EBF4FF`
-                      )
+                      getAvatar(data?.me?.username || "")
                     }
                     alt=""
                   />

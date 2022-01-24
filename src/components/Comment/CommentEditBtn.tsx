@@ -1,7 +1,11 @@
 import { Menu } from "@headlessui/react";
+import { Dispatch, SetStateAction } from "react";
 import { classNames } from "../../constance";
 
-export default function CommentEditBtn({ setIsEditable }: any) {
+interface IcommentEditBtn {
+  setIsEditable: Dispatch<SetStateAction<boolean>>;
+}
+export default function CommentEditBtn({ setIsEditable }: IcommentEditBtn) {
   const onEditClick = () => {
     setIsEditable(true);
   };

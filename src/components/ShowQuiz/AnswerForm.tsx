@@ -1,7 +1,10 @@
 import { gql, useMutation } from "@apollo/client";
+import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { apolloClient } from "../../apolloClient";
+import { quizTry } from "../../__generated__/quizTry";
+import { showQuiz_showQuiz } from "../../__generated__/showQuiz";
 
 const QUIZ_TRY_MUTATION = gql`
   mutation quizTry($quizTryId: Int!, $answer: String!) {
@@ -12,16 +15,26 @@ const QUIZ_TRY_MUTATION = gql`
     }
   }
 `;
+interface IanswerForm {
+  showQuiz: showQuiz_showQuiz;
+  setIsAnswer: Dispatch<SetStateAction<boolean>>;
+  setIsCorrect: Dispatch<SetStateAction<boolean>>;
+  setTryError: Dispatch<SetStateAction<string>>;
+}
+
+interface IuseForm {
+  subjectiveAnswer: string;
+}
 export default function AnswerForm({
   showQuiz,
   setIsAnswer,
   setIsCorrect,
   setTryError,
-}: any) {
+}: IanswerForm) {
   const param = useParams();
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm<IuseForm>();
 
-  const onTryCompleted = (data: any) => {
+  const onTryCompleted = (data: quizTry) => {
     setIsAnswer(true);
     if (data?.quizTry?.ok) {
       if (!data.quizTry.result) {
@@ -49,17 +62,21 @@ export default function AnswerForm({
           },
         });
       }
-      setIsCorrect(data.quizTry.result);
+      if (data.quizTry.result) {
+        setIsCorrect(data.quizTry.result);
+      }
     } else {
-      setTryError(data.quizTry.error);
+      if (data.quizTry.error) {
+        setTryError(data.quizTry.error);
+      }
     }
   };
 
-  const [quizTryMutation] = useMutation(QUIZ_TRY_MUTATION, {
+  const [quizTryMutation] = useMutation<quizTry>(QUIZ_TRY_MUTATION, {
     onCompleted: onTryCompleted,
   });
 
-  const onAnswerClick = ({ index }: any) => {
+  const onAnswerClick = (index: number) => {
     quizTryMutation({
       variables: {
         quizTryId: parseInt(param.id as string),
@@ -67,7 +84,7 @@ export default function AnswerForm({
       },
     });
   };
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: IuseForm) => {
     quizTryMutation({
       variables: {
         quizTryId: parseInt(param.id as string),
@@ -100,11 +117,11 @@ export default function AnswerForm({
       ) : (
         <div className="mt-8 sm:mt-10 lg:mt-20">
           <ul className="grid grid-cols-2">
-            {showQuiz?.choice.map((item: any, index: any) => (
+            {showQuiz?.choice?.map((item, index) => (
               <li
                 key={index}
                 value={index}
-                onClick={() => onAnswerClick({ index })}
+                onClick={() => onAnswerClick(index)}
                 className="p-6 m-2 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200"
               >
                 {item}

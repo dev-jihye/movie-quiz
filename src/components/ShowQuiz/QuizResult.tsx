@@ -1,7 +1,18 @@
 import { motion } from "framer-motion";
+import { Dispatch, SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function QuizResult({ setIsAnswer, isCorrect, tryError }: any) {
+interface IquizResult {
+  setIsAnswer: Dispatch<SetStateAction<boolean>>;
+  isCorrect: boolean;
+  tryError: string;
+}
+
+export default function QuizResult({
+  setIsAnswer,
+  isCorrect,
+  tryError,
+}: IquizResult) {
   const navigate = useNavigate();
 
   const onHomeClick = () => {

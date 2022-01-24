@@ -1,84 +1,103 @@
 import Quiz from "./Quiz";
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
+import { isQuizLoadEndVar, shouldRefetchVar } from "../makeVars/QuizVars";
+import { QUIZ_HASHTAGS_FRAGMENT, USER_FRAGMENT } from "./Fragments";
 
-const posts = [
-  {
-    id: 1,
-    title: "#실화배경 #한국영화 #빈칸채우기",
-    href: "#",
-    card: {
-      color: "bg-teal-400",
-      href: "/",
-    },
-    category: {
-      name: "Drama",
-      href: "#",
-      color: "bg-gray-50 text-slate-900",
-    },
-    correct: "20%",
-    datetime: "2020-03-16",
-    author: {
-      name: "Paul York",
-      href: "#",
-      imageUrl:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    like: "6",
-  },
-  {
-    id: 2,
-    title: "#디즈니 #감동 #어드벤쳐 #희망적인 #사랑스러운",
-    href: "#",
-    card: {
-      color: "bg-violet-400",
-      href: "/",
-    },
-    category: {
-      name: "Animation",
-      href: "#",
-      color: "bg-gray-50 text-slate-900",
-    },
-    correct: "70%",
-    datetime: "2020-03-10",
-    author: {
-      name: "Dessie Ryan",
-      href: "#",
-      imageUrl:
-        "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    like: "4",
-  },
-  {
-    id: 3,
-    title: "#아름다운배경 #첫사랑 #설원 #편지",
-    href: "#",
-    card: {
-      color: "bg-fuchsia-400",
-      href: "/",
-    },
-    category: {
-      name: "Romance",
-      href: "#",
-      color: "bg-gray-50 text-slate-900",
-    },
-    correct: "52%",
-    datetime: "2020-02-12",
-    author: {
-      name: "Easer Collins",
-      href: "#",
-      imageUrl:
-        "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    like: "11",
-  },
-];
+const SHOW_QUIZS_QUERY = gql`
+  query showQuizs($take: Int, $lastId: Int) {
+    showQuizs(take: $take, lastId: $lastId) {
+      id
+      user {
+        ...UserFragment
+      }
+      genre
+      quizHashtags {
+        ...QuizHashtagsFragment
+      }
+      answerRate
+      totalLikes
+    }
+  }
+  ${USER_FRAGMENT}
+  ${QUIZ_HASHTAGS_FRAGMENT}
+`;
 
 export default function QuizList() {
-  return (
-    <div className="grid gap-16 pb-4 lg:grid-cols-3 lg:gap-x-5 lg:gap-y-12">
-      {posts.map((post, index) => (
-        <Quiz key={index} post={post} />
-      ))}
+  const bgColors = [
+    { bgColor: "#EC6985 ", genreBgColor: "#fdb4b4" },
+    { bgColor: "#EF95A0", genreBgColor: "#ffdada" },
+    { bgColor: "#F4C16F", genreBgColor: "#f9f4d2" },
+    { bgColor: "#529FA8", genreBgColor: "#99dee5" },
+    { bgColor: "#7DCDD3", genreBgColor: "#c8eff3" },
+  ];
+
+  const { loading, data, refetch, fetchMore } = useQuery(SHOW_QUIZS_QUERY, {
+    variables: { take: 15 },
+    onCompleted: () => {
+      isQuizLoadEndVar(false);
+    },
+  });
+
+  const loaderRef = useRef<any>();
+
+  const handleObserver = useCallback(
+    async (entries) => {
+      const isQuizLoadEnd = isQuizLoadEndVar();
+      if (isQuizLoadEnd) {
+        return;
+      }
+      const target = entries[0];
+      if (data?.showQuizs && target.isIntersecting) {
+        const lastId = data.showQuizs[data.showQuizs.length - 1].id;
+        const more: any = await fetchMore({
+          variables: {
+            lastId,
+          },
+        });
+        if (more?.data?.showQuizs?.length === 0) {
+          //더 이상 불러오지 않게 함
+          isQuizLoadEndVar(true);
+        }
+      }
+    },
+    [data]
+  );
+
+  useEffect(() => {
+    const option = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0,
+    };
+    const observer = new IntersectionObserver(handleObserver, option);
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+  }, [handleObserver]);
+
+  useEffect(() => {
+    const shouldRefetch = shouldRefetchVar();
+    if (shouldRefetch) {
+      refetch();
+      shouldRefetchVar(false);
+    }
+  }, []);
+
+  return loading ? null : (
+    <div className="grid gap-4 pb-4 lg:grid-cols-3 ">
+      {data?.showQuizs?.map((post: any, index: number) => {
+        let bgIndex = 0;
+        if (index > bgColors.length - 1) {
+          bgIndex =
+            index - bgColors.length * Math.floor(index / bgColors.length);
+        } else {
+          bgIndex = index;
+        }
+        const bgColor = bgColors[bgIndex];
+        return <Quiz key={index} post={post} bgColor={bgColor} />;
+      })}
+      <div ref={loaderRef}></div>
     </div>
   );
 }

@@ -1,29 +1,42 @@
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useEffect, useRef, useState } from "react";
-import Layout from "../components/Layout";
 import { useForm } from "react-hook-form";
-import { gql, useMutation } from "@apollo/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { SHOW_QUIZ_FRAGMENT } from "../components/Fragments";
+import Layout from "../components/Layout";
 import { shouldRefetchVar } from "../makeVars/QuizVars";
-import { USER_FRAGMENT } from "../components/Fragments";
 
-const CREATE_QUIZ_MUTATION = gql`
-  mutation createQuiz(
-    $type: String!
-    $genre: String!
-    $content: String!
-    $answer: String!
+const SHOW_QUIZ_QUERY = gql`
+  query showQuiz($id: Int!) {
+    showQuiz(id: $id) {
+      ...ShowQuizFragment
+    }
+  }
+  ${SHOW_QUIZ_FRAGMENT}
+`;
+
+const UPDATE_QUIZ_MUTATION = gql`
+  mutation updateQuiz(
+    $id: Int!
+    $type: String
+    $genre: String
     $image: Upload
+    $content: String
     $choice: [String!]!
+    $answer: String
     $quizHashtags: String
+    $fileExists: Boolean!
   ) {
-    createQuiz(
+    updateQuiz(
+      id: $id
       type: $type
       genre: $genre
-      content: $content
-      answer: $answer
       image: $image
+      content: $content
       choice: $choice
+      answer: $answer
       quizHashtags: $quizHashtags
+      fileExists: $fileExists
     ) {
       ok
       error
@@ -31,24 +44,20 @@ const CREATE_QUIZ_MUTATION = gql`
   }
 `;
 
-export default function CreateQuiz() {
+export default function EditQuiz() {
   const fileRef = useRef<any>();
-  const [imgPreview, setImgPreview] = useState("");
   const [answerType, setAnswerType] = useState("subjective");
+  const [imgPreview, setImgPreview] = useState("");
+  const [fileExists, setFileExists] = useState(true);
   const [image, setImage] = useState<any>(null);
   const navigate = useNavigate();
-  const { register, handleSubmit, watch } = useForm({
-    defaultValues: {
-      type: "subjective",
-      genre: "액션",
-      content: "",
-      choiceOne: "",
-      choiceTwo: "",
-      choiceThree: "",
-      choiceFour: "",
-      answer: "",
-      quizHashtags: "",
+  const param = useParams();
+  const { loading, data } = useQuery(SHOW_QUIZ_QUERY, {
+    variables: {
+      id: parseInt(param.id as string),
     },
+  });
+  const { register, handleSubmit, watch, setValue } = useForm({
     mode: "onChange",
   });
 
@@ -56,21 +65,41 @@ export default function CreateQuiz() {
     setAnswerType(watch("type"));
   }, [watch("type")]);
 
+  useEffect(() => {
+    console.log(data, "effect");
+    if (data?.showQuiz) {
+      const quiz = data.showQuiz;
+      setValue("type", quiz.type);
+      setValue("genre", quiz.genre);
+      setValue("content", quiz.content);
+      setValue("choiceOne", quiz.choice[0]);
+      setValue("choiceTwo", quiz.choice[1]);
+      setValue("choiceThree", quiz.choice[2]);
+      setValue("choiceFour", quiz.choice[3]);
+      setValue("answer", quiz.answer);
+      setValue(
+        "quizHashtags",
+        quiz.quizHashtags?.map((tag: any) => tag.hashtag).join(" ")
+      );
+      if (quiz.image) {
+        setImgPreview(quiz.image.Location);
+      }
+    }
+  }, [data]);
+
   const onCompleted = (data: any) => {
     shouldRefetchVar(true);
     navigate("/");
   };
 
-  const [createQuizMutation, { loading, error }] = useMutation(
-    CREATE_QUIZ_MUTATION,
-    {
-      onCompleted,
-    }
-  );
+  const [updateQuizMutation] = useMutation(UPDATE_QUIZ_MUTATION, {
+    onCompleted,
+  });
 
   const onSubmit = (data: any) => {
-    createQuizMutation({
+    updateQuizMutation({
       variables: {
+        id: parseInt(param.id as string),
         ...data,
         choice: [
           watch("choiceOne"),
@@ -79,11 +108,10 @@ export default function CreateQuiz() {
           watch("choiceFour"),
         ],
         image: image || undefined,
+        fileExists,
       },
     });
-    console.log(data);
   };
-
   const onFileChange = (event: any) => {
     const {
       target: { files },
@@ -93,10 +121,12 @@ export default function CreateQuiz() {
     const imgBlob = URL.createObjectURL(file);
     console.log(imgBlob);
     setImgPreview(imgBlob);
+    setFileExists(true);
   };
 
   const onDeleteClick = () => {
     setImgPreview("");
+    setFileExists(false);
     fileRef.current.value = "";
   };
 
@@ -106,7 +136,6 @@ export default function CreateQuiz() {
       navigate("/");
     }
   };
-
   return (
     <Layout>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -126,7 +155,7 @@ export default function CreateQuiz() {
                 name="type"
                 type="radio"
                 value="subjective"
-                className="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                className={`w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500`}
               />
               <span className="block ml-3 text-sm font-medium text-gray-700">
                 주관식

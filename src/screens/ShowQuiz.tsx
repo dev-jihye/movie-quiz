@@ -1,56 +1,112 @@
-import { isLoggedInVar } from "../apolloClient";
+import { gql, useQuery } from "@apollo/client";
+import { useParams } from "react-router-dom";
 import Layout from "../components/Layout";
-import Report from "../components/Report";
+import { useEffect, useState } from "react";
+import Info from "../components/ShowQuiz/Info";
+import QuizImg from "../components/ShowQuiz/QuizImg";
+import AnswerForm from "../components/ShowQuiz/AnswerForm";
+import QuizDropMenu from "../components/ShowQuiz/QuizDropMenu";
+import QuizResult from "../components/ShowQuiz/QuizResult";
+import Comment from "../components/Comment/CommentSection";
+import Like from "../components/ShowQuiz/Like";
+import { SHOW_QUIZ_FRAGMENT } from "../components/Fragments";
+import { css } from "@emotion/react";
+import BarLoader from "react-spinners/BarLoader";
+
+const override = css`
+  display: block;
+  margin: 0 auto;
+  border-color: #d73c36;
+`;
+
+const SHOW_QUIZ_QUERY = gql`
+  query showQuiz($id: Int!) {
+    showQuiz(id: $id) {
+      ...ShowQuizFragment
+    }
+  }
+  ${SHOW_QUIZ_FRAGMENT}
+`;
 
 export default function ShowQuiz() {
+  const param = useParams();
+  const { loading, error, data, refetch } = useQuery(SHOW_QUIZ_QUERY, {
+    variables: {
+      id: parseInt(param.id as string),
+    },
+  });
+  const [isAnswer, setIsAnswer] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [tryError, setTryError] = useState("");
+  const [color, setColor] = useState("#d73c36");
+  useEffect(() => {
+    console.log(data?.showQuiz?.nextTry);
+    if (data?.showQuiz) {
+      if (data?.showQuiz?.isWinner) {
+        setIsAnswer(true);
+        setIsCorrect(true);
+      } else {
+        if (data?.showQuiz?.nextTry > 0) {
+          setIsAnswer(true);
+          setTryError(`${data.showQuiz.nextTry}초 후 다시 시도해주세요`);
+        } else {
+          setIsAnswer(false);
+          setIsCorrect(false);
+        }
+      }
+    }
+    console.log(data);
+  }, [data]);
+
+  useEffect(() => {
+    refetch();
+  }, []);
+
   return (
     <Layout>
       <>
-        <div className="flex items-center mb-4">
-          <img
-            src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-            className="w-10 h-10 rounded-full"
-          />
-          <span className="ml-3">jjellyy</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="inline-flex items-center px-3 py-0.5 rounded-full font-medium bg-pink-500 text-slate-50">
-            드라마
-          </span>
-          <p className="text-sm text-gray-600">정답률 : 60%</p>
-        </div>
-        <div className="flex flex-col items-center justify-between mt-10">
-          <p className="inline-block sm:text-xl">
-            다음 영화 대사의 빈 칸에 알맞은 단어는?
-          </p>
-          <p className="inline-block mt-4 sm:text-xl">
-            호의가 계속 되면은 그게 ㅡㅡ 인 줄 알아요
-          </p>
-        </div>
-        <div className="mt-8 sm:mt-10 lg:mt-16">
-          <ul className="flex">
-            <li className="w-1/2 p-6 m-2 bg-gray-100 rounded-md cursor-pointer">
-              둘리
-            </li>
-            <li className="w-1/2 p-6 m-2 bg-gray-100 rounded-md cursor-pointer">
-              마블리
-            </li>
-          </ul>
-          <ul className="flex">
-            <li className="w-1/2 p-6 m-2 bg-gray-100 rounded-md cursor-pointer">
-              대리
-            </li>
-            <li className="w-1/2 p-6 m-2 bg-gray-100 rounded-md cursor-pointer">
-              권리
-            </li>
-          </ul>
-        </div>
-        <div className="flex justify-between m-2 mt-10 text-gray-600 lg:mt-16">
-          <p className="text-sm sm:text-base">
-            #실화배경 #한국영화 #빈칸채우기
-          </p>
-          <Report />
-        </div>
+        {loading ? (
+          <div className="my-32 sweet-loading">
+            <BarLoader color={color} loading={loading} css={override} />
+          </div>
+        ) : (
+          <>
+            {data?.showQuiz && (
+              <>
+                <Info showQuiz={data?.showQuiz} />
+                {isAnswer ? (
+                  <QuizResult
+                    setIsAnswer={setIsAnswer}
+                    isCorrect={isCorrect}
+                    tryError={tryError}
+                  />
+                ) : (
+                  <>
+                    <QuizImg showQuiz={data?.showQuiz} />
+                    <AnswerForm
+                      showQuiz={data?.showQuiz}
+                      setIsAnswer={setIsAnswer}
+                      setIsCorrect={setIsCorrect}
+                      setTryError={setTryError}
+                    />
+                  </>
+                )}
+
+                <div className="flex items-center justify-between m-2 mt-10 text-gray-600 lg:mt-20">
+                  <p className="text-sm sm:text-base">
+                    {data?.showQuiz?.quizHashtags
+                      ?.map((tag: any) => tag.hashtag)
+                      .join(" ")}
+                  </p>
+
+                  <QuizDropMenu showQuiz={data?.showQuiz} />
+                </div>
+                {isAnswer && <Like showQuiz={data?.showQuiz} />}
+                {isAnswer && <Comment />}
+              </>
+            )}
+          </>
+        )}
       </>
     </Layout>
   );

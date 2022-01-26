@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
+import { shouldRefetchVar } from "../../makeVars/QuizVars";
 
 interface IquizResult {
   setIsAnswer: Dispatch<SetStateAction<boolean>>;
@@ -16,6 +17,7 @@ export default function QuizResult({
   const navigate = useNavigate();
 
   const onHomeClick = () => {
+    shouldRefetchVar(true);
     navigate("/");
   };
 
@@ -28,13 +30,13 @@ export default function QuizResult({
             <p className="mt-2 text-base sm:text-lg">{tryError}</p>
           </motion.div>
           <button
-            className="justify-center px-4 py-2 mt-8 text-sm rounded-md hover:opacity-70"
+            className="justify-center px-4 py-2 mt-8 text-sm rounded-md opacity-80 hover:opacity-100 bg-[#f56363] text-white"
             onClick={onHomeClick}
           >
             홈으로 가기
           </button>
           <button
-            className="bg-[#c3c3c3] text-white justify-center px-4 py-2 mt-8 ml-3 text-sm rounded-md hover:opacity-70"
+            className="bg-[#bfbebe] text-white justify-center px-4 py-2 mt-8 ml-3 text-sm rounded-md opacity-80 hover:opacity-100"
             onClick={() => {
               setIsAnswer(false);
             }}
@@ -51,13 +53,13 @@ export default function QuizResult({
             {isCorrect ? <p>🎉 정답입니다 🎉</p> : <p>🙅‍♀️ 틀렸습니다 🙅‍♀️</p>}
           </motion.div>
           <button
-            className="justify-center px-4 py-2 mt-8 text-sm rounded-md hover:opacity-70 bg-[#ef7676] text-white"
+            className={`justify-center px-4 py-2 mt-8 text-sm rounded-md opacity-80 hover:opacity-100 bg-[#F56363] text-white`}
             onClick={onHomeClick}
           >
             홈으로 가기
           </button>
           <button
-            className="bg-[#c3c3c3] text-white justify-center px-4 py-2 mt-8 ml-3 text-sm rounded-md hover:opacity-70"
+            className="bg-[#c3c3c3] text-white justify-center px-4 py-2 mt-8 ml-3 text-sm rounded-md opacity-80 hover:opacity-100"
             onClick={() => {
               setIsAnswer(false);
             }}

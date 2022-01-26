@@ -8,18 +8,20 @@ import {
 import Layout from "../components/Layout";
 import ShowProfileInfo from "../components/Profile/ShowProfileInfo";
 import UpdateProfileInfo from "../components/Profile/UpdateProfileInfo";
-import Quiz from "../components/Quiz";
-import { bgColors } from "../utils/BgColors";
 import { showProfile } from "../__generated__/showProfile";
+import UserQuiz from "../components/Profile/UserQuiz";
+import UserQuizTry from "../components/Profile/UserQuizTry";
+import { useParams } from "react-router-dom";
+import { isQuizLoadEndVar } from "../makeVars/QuizVars";
 
 const SHOW_PROFILE_QUERY = gql`
-  query showProfile($take: Int) {
-    me {
+  query showProfile($id: Int!, $take: Int, $lastId: Int) {
+    showUser(id: $id) {
       ...UserFragment
-      quizs(take: $take) {
+      quizs(take: $take, lastId: $lastId) {
         ...ShowQuizFragment
       }
-      quizTries(take: $take) {
+      quizTries(take: $take, lastId: $lastId) {
         ...ShowQuizFragment
       }
       totalConquests
@@ -32,12 +34,24 @@ const SHOW_PROFILE_QUERY = gql`
 `;
 
 export default function MyProfile() {
+  const params = useParams();
   const [isEditable, setIsEditable] = useState(false);
   const [active, setActive] = useState<number>(0);
-  const { loading, data, refetch } = useQuery<showProfile>(SHOW_PROFILE_QUERY);
+  const { loading, data, refetch, fetchMore } = useQuery<showProfile>(
+    SHOW_PROFILE_QUERY,
+    {
+      variables: {
+        take: 9,
+        id: parseInt(params.id as string),
+      },
+      onCompleted: () => {
+        isQuizLoadEndVar(false);
+      },
+    }
+  );
   useEffect(() => {
     refetch();
-  }, [data]);
+  }, [active]);
 
   return (
     <Layout loading={loading}>
@@ -80,37 +94,12 @@ export default function MyProfile() {
             </li>
           </ul>
           {active === 0 ? (
-            <div className="grid gap-4 pb-4 lg:grid-cols-3 ">
-              {data?.me?.quizs.length === 0 && <p>내가 낸 문제가 없습니다.</p>}
-              {data?.me?.quizs?.map((post, index) => {
-                let bgIndex = 0;
-                if (index > bgColors.length - 1) {
-                  bgIndex =
-                    index -
-                    bgColors.length * Math.floor(index / bgColors.length);
-                } else {
-                  bgIndex = index;
-                }
-                const bgColor = bgColors[bgIndex];
-                return <Quiz key={index} post={post} bgColor={bgColor} />;
-              })}
-            </div>
+            <UserQuiz quizs={data?.showUser?.quizs} fetchMore={fetchMore} />
           ) : (
-            <div className="grid gap-4 pb-4 lg:grid-cols-3 ">
-              {data?.me?.quizTries.length === 0 && <p>도전 문제가 없습니다.</p>}
-              {data?.me?.quizTries?.map((post, index) => {
-                let bgIndex = 0;
-                if (index > bgColors.length - 1) {
-                  bgIndex =
-                    index -
-                    bgColors.length * Math.floor(index / bgColors.length);
-                } else {
-                  bgIndex = index;
-                }
-                const bgColor = bgColors[bgIndex];
-                return <Quiz key={index} post={post} bgColor={bgColor} />;
-              })}
-            </div>
+            <UserQuizTry
+              quizs={data?.showUser?.quizTries}
+              fetchMore={fetchMore}
+            />
           )}
         </div>
       </>

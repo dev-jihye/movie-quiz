@@ -62,6 +62,34 @@ export const apolloClient = new ApolloClient({
           },
         },
       },
+      User: {
+        fields: {
+          quizs: {
+            merge(existing = [], incoming = []) {
+              const existsArr = existing.map((item: any) => item.__ref);
+              const filterIncoming = incoming.filter(
+                (item: any) => !existsArr.includes(item.__ref)
+              );
+              return [...existing, ...filterIncoming];
+            },
+            read(existing) {
+              return existing && Object.values(existing);
+            },
+          },
+          quizTries: {
+            merge(existing = [], incoming = []) {
+              const existsArr = existing.map((item: any) => item.__ref);
+              const filterIncoming = incoming.filter(
+                (item: any) => !existsArr.includes(item.__ref)
+              );
+              return [...existing, ...filterIncoming];
+            },
+            read(existing) {
+              return existing && Object.values(existing);
+            },
+          },
+        },
+      },
     },
   }),
 });

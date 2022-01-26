@@ -19,6 +19,8 @@ const SHOW_QUIZS_QUERY = gql`
       }
       answerRate
       totalLikes
+      isTried
+      isWinner
     }
   }
   ${USER_FRAGMENT}

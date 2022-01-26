@@ -62,9 +62,7 @@ export default function AnswerForm({
           },
         });
       }
-      if (data.quizTry.result) {
-        setIsCorrect(data.quizTry.result);
-      }
+      setIsCorrect(data.quizTry.result as boolean);
     } else {
       if (data.quizTry.error) {
         setTryError(data.quizTry.error);
@@ -108,7 +106,7 @@ export default function AnswerForm({
             />
             <button
               type="submit"
-              className="inline-flex items-center justify-center px-4 py-2 ml-2 text-sm font-medium text-white bg-[#ef7676] border border-transparent rounded-md shadow-sm hover:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ef7676]"
+              className="inline-flex items-center justify-center px-4 py-2 ml-2 text-sm font-medium text-white bg-[#f56363] border border-transparent rounded-md shadow-sm opacity-80 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ef7676]"
             >
               제출
             </button>

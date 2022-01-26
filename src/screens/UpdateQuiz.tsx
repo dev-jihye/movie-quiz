@@ -5,9 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { SHOW_QUIZ_FRAGMENT } from "../utils/Fragments";
 import Layout from "../components/Layout";
 import { shouldRefetchVar } from "../makeVars/QuizVars";
-import { mainColor } from "../utils/Styles";
 import { showQuizForUpdate } from "../__generated__/showQuizForUpdate";
-import { updateQuiz, updateQuizVariables } from "../__generated__/updateQuiz";
+import { updateQuiz } from "../__generated__/updateQuiz";
 
 const SHOW_QUIZ_QUERY = gql`
   query showQuizForUpdate($id: Int!) {
@@ -106,9 +105,13 @@ export default function EditQuiz() {
     }
   }, [data]);
 
-  const onCompleted = () => {
-    shouldRefetchVar(true);
-    navigate("/");
+  const onCompleted = (data: updateQuiz) => {
+    if (data.updateQuiz.ok) {
+      shouldRefetchVar(true);
+      navigate("/");
+    } else {
+      alert(data.updateQuiz.error);
+    }
   };
 
   const [updateQuizMutation] = useMutation<updateQuiz>(UPDATE_QUIZ_MUTATION, {
@@ -116,6 +119,25 @@ export default function EditQuiz() {
   });
 
   const onSubmit = (data: IupdateQuizForm) => {
+    if (data.type === "choice") {
+      if (
+        !watch("choiceOne").trim() ||
+        !watch("choiceTwo").trim() ||
+        !watch("choiceThree").trim() ||
+        !watch("choiceFour").trim()
+      ) {
+        alert("보기를 모두 입력해주세요. 공백은 허용되지 않습니다.");
+        return;
+      }
+    }
+    if (!data.content.trim()) {
+      alert("문제를 작성해주세요.");
+      return;
+    }
+    if (!data.answer.trim()) {
+      alert("정답을 입력해주세요.");
+      return;
+    }
     updateQuizMutation({
       variables: {
         id: parseInt(param.id as string),
@@ -157,7 +179,7 @@ export default function EditQuiz() {
     }
   };
   return (
-    <Layout loading={loading}>
+    <Layout>
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset>
           <div>
@@ -260,7 +282,9 @@ export default function EditQuiz() {
                       </label>
                       <div className="mt-1">
                         <input
-                          {...register("choiceOne")}
+                          {...register("choiceOne", {
+                            required: true,
+                          })}
                           type="text"
                           id="choice-one"
                           className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
@@ -276,7 +300,9 @@ export default function EditQuiz() {
                       </label>
                       <div className="mt-1">
                         <input
-                          {...register("choiceTwo")}
+                          {...register("choiceTwo", {
+                            required: true,
+                          })}
                           type="text"
                           id="choice-two"
                           className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
@@ -292,7 +318,9 @@ export default function EditQuiz() {
                       </label>
                       <div className="mt-1">
                         <input
-                          {...register("choiceThree")}
+                          {...register("choiceThree", {
+                            required: true,
+                          })}
                           type="text"
                           id="choice-three"
                           className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
@@ -308,7 +336,9 @@ export default function EditQuiz() {
                       </label>
                       <div className="mt-1">
                         <input
-                          {...register("choiceFour")}
+                          {...register("choiceFour", {
+                            required: true,
+                          })}
                           type="text"
                           id="choice-four"
                           className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
@@ -325,19 +355,31 @@ export default function EditQuiz() {
                   className="block text-sm font-medium text-gray-700"
                 >
                   정답
-                  <span className="ml-2 text-xs text-gray-500">
-                    (객관식의 경우 보기 번호만 적어주세요)
-                  </span>
                 </label>
-                <div className="mt-1">
-                  <input
-                    {...register("answer", { required: true })}
-                    type="text"
-                    name="answer"
-                    id="answer"
-                    className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
-                  />
-                </div>
+                {answerType === "subjective" ? (
+                  <div className="mt-1">
+                    <input
+                      {...register("answer", { required: true })}
+                      type="text"
+                      id="answer"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
+                    />
+                  </div>
+                ) : (
+                  <div className="mt-1">
+                    <select
+                      {...register("answer", { required: true })}
+                      name="answer"
+                      id="answer"
+                      className="w-full border-gray-300 rounded-md shadow-sm focus:ring-[#ef7676] focus:border-[#ef7676] sm:text-sm"
+                    >
+                      <option>1</option>
+                      <option>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               <div className="mt-6 sm:col-span-6">
@@ -462,11 +504,10 @@ export default function EditQuiz() {
             </button>
             <button
               type="submit"
-              className={`inline-flex justify-center px-4 py-2 ml-3 text-sm font-medium text-white border border-transparent rounded-md shadow-sm hover:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+              className={`inline-flex justify-center px-4 py-2 ml-3 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-[#f56363] hover:opacity-100 opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                 loading && "opacity-50"
               }`}
               disabled={loading}
-              style={{ background: mainColor.mainColor }}
             >
               {loading ? "저장중" : "저장"}
             </button>

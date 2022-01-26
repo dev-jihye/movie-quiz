@@ -58,6 +58,10 @@ export default function UpdateCommentForm({
   };
 
   const onSubmit = (data: IuseForm) => {
+    if (!data.content.trim()) {
+      alert("댓글을 작성해주세요.");
+      return;
+    }
     updateQuizCommentMutation({
       variables: {
         id: comment.id,
@@ -70,7 +74,9 @@ export default function UpdateCommentForm({
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextareaAutosize
-          {...register("content")}
+          {...register("content", {
+            required: true,
+          })}
           minRows={2}
           className="w-full"
         />

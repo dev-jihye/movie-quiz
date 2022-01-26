@@ -84,10 +84,20 @@ export default function UpdateProfileInfo({
   };
 
   const onSubmit = (data: IuseForm) => {
+    console.log(data.username, userData?.showUser?.username);
+    if (data.username !== userData?.showUser?.username) {
+      if (!data.username.trim()) {
+        alert("닉네임을 입력해주세요.");
+        return;
+      }
+    }
+
     updateUserMutation({
       variables: {
         username:
-          data.username === userData?.me?.username ? undefined : data.username,
+          data.username.trim() === userData?.showUser?.username
+            ? undefined
+            : data.username.trim(),
         avatar: image,
         fileExists,
       },
@@ -110,8 +120,8 @@ export default function UpdateProfileInfo({
   };
 
   useEffect(() => {
-    if (userData?.me?.avatar?.Location) {
-      setImgPreview(userData?.me?.avatar?.Location);
+    if (userData?.showUser?.avatar?.Location) {
+      setImgPreview(userData?.showUser?.avatar?.Location);
       setFileExists(true);
     }
   }, [userData]);
@@ -141,8 +151,8 @@ export default function UpdateProfileInfo({
                     //기존 프로필
                     <img
                       src={
-                        userData?.me?.avatar?.Location ||
-                        getAvatar(userData?.me?.username || "")
+                        userData?.showUser?.avatar?.Location ||
+                        getAvatar(userData?.showUser?.username || "")
                       }
                       alt="profile"
                       className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28 lg:w-32 lg:h-32"
@@ -151,7 +161,7 @@ export default function UpdateProfileInfo({
                     //이미지 프리뷰가 없을 때
                     <img
                       //디폴트 프로필
-                      src={getAvatar(userData?.me?.username || "")}
+                      src={getAvatar(userData?.showUser?.username || "")}
                       className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28 lg:w-32 lg:h-32"
                       alt="profile"
                     />
@@ -236,8 +246,10 @@ export default function UpdateProfileInfo({
               />
               <input
                 className="w-full mr-4 text-xl border-b border-gray-400 sm:text-2xl"
-                {...register("username")}
-                defaultValue={userData?.me?.username}
+                {...register("username", {
+                  required: true,
+                })}
+                defaultValue={userData?.showUser?.username}
                 onKeyDown={clearErrorMsg}
               />
             </div>
@@ -247,13 +259,13 @@ export default function UpdateProfileInfo({
             <div>
               <p className="mb-2 text-sm sm:text-base">도전 문제</p>
               <p className="text-xl text-center text-gray-500">
-                {userData?.me?.totalTries}
+                {userData?.showUser?.totalTries}
               </p>
             </div>
             <div className="ml-2 sm:ml-8">
               <p className="mb-2 text-sm sm:text-base">맞춘 문제</p>
               <p className="text-xl text-center text-gray-500">
-                {userData?.me?.totalConquests}
+                {userData?.showUser?.totalConquests}
               </p>
             </div>
           </div>

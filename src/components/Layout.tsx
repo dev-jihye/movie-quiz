@@ -22,13 +22,13 @@ export default function Layout({ children, loading }: ILayout) {
         {location.pathname === "/" && (
           <Link
             to={ROUTE.CREATE_QUIZ}
-            className="fixed hidden sm:block bottom-5 right-5 hover:opacity-70"
+            className="fixed hidden sm:block bottom-5 right-5"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-10 h-10"
+              className="w-10 h-10 opacity-80 hover:opacity-100"
               viewBox="0 0 20 20"
-              fill="#ef7676"
+              fill="#f56363"
             >
               <path
                 fillRule="evenodd"

@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { loginUserVar } from "../../makeVars/UserVars";
 import { USER_FRAGMENT } from "../../utils/Fragments";
-import { mainColor } from "../../utils/Styles";
 import { getAvatar } from "../../utils/utils";
 import { createQuizComment } from "../../__generated__/createQuizComment";
 
@@ -34,7 +33,7 @@ interface IuseForm {
 export default function CommentForm({ refetch }: IcommentForm) {
   const loginUser = useReactiveVar(loginUserVar);
   const param = useParams();
-  const { register, handleSubmit, setValue } = useForm<IuseForm>({
+  const { register, handleSubmit, setValue, watch } = useForm<IuseForm>({
     defaultValues: {
       comment: "",
     },
@@ -52,6 +51,10 @@ export default function CommentForm({ refetch }: IcommentForm) {
   );
 
   const onSubmit = (data: IuseForm) => {
+    if (!data.comment.trim()) {
+      alert("댓글을 작성해주세요.");
+      return;
+    }
     createQuizCommentMutation({
       variables: {
         id: parseInt(param.id as string),
@@ -93,8 +96,12 @@ export default function CommentForm({ refetch }: IcommentForm) {
                 <div className="flex-shrink-0">
                   <button
                     type="submit"
-                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm hover:opacity-70 focus:outline-none"
-                    style={{ background: mainColor.mainColor }}
+                    className={`${
+                      !watch("comment").trim()
+                        ? "pointer-events-none opacity-50"
+                        : "opacity-80"
+                    } inline-flex items-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-[#f56363] hover:opacity-100 focus:outline-none`}
+                    disabled={!watch("comment").trim()}
                   >
                     저장
                   </button>

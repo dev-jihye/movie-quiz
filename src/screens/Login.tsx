@@ -102,7 +102,7 @@ export default function Login() {
               <div>
                 <button
                   type="submit"
-                  className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-[#ef7676] border border-transparent rounded-md shadow-sm hover:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ef7676]"
+                  className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-[#f56363] border border-transparent rounded-md shadow-sm hover:opacity-100 opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ef7676]"
                 >
                   로그인
                 </button>

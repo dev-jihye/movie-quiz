@@ -32,6 +32,7 @@ export const SHOW_QUIZ_FRAGMENT = gql`
     type
     image
     isMine
+    isTried
     answer
     nextTry
     isWinner

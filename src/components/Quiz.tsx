@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { showQuizs_showQuizs } from "../__generated__/showQuizs";
 import { IbgColors } from "../utils/BgColors";
 import { getAvatar } from "../utils/utils";
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/outline";
 
 interface Iquiz {
   post: showQuizs_showQuizs;
@@ -25,17 +26,28 @@ export default function Quiz({ post, bgColor }: Iquiz) {
           backgroundColor: bgColor.bgColor,
         }}
       >
-        <Link to={`${ROUTE.QUIZ}/${post.id}`}>
-          <div>
+        <Link
+          to={`${ROUTE.QUIZ}/${post.id}`}
+          className="flex flex-col justify-between flex-1 w-full h-full"
+        >
+          <div className="flex justify-between m-4">
             <span
               className={
-                "inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium m-4 bg-white"
+                "inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-white"
               }
               style={{
                 backgroundColor: bgColor.genreBgColor,
               }}
             >
               {post.genre}
+            </span>
+            <span>
+              {post.isTried &&
+                (post.isWinner ? (
+                  <CheckCircleIcon className="w-6 h-6" />
+                ) : (
+                  <XCircleIcon className="w-6 h-6" />
+                ))}
             </span>
           </div>
           <p className="mx-4 mt-4 font-semibold">{hashtags?.join(" ")}</p>

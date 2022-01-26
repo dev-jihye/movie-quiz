@@ -20,8 +20,8 @@ export default function ShowProfileInfo({
           <div className="relative">
             <img
               src={
-                userData?.me?.avatar?.Location ||
-                getAvatar(userData?.me?.username || "")
+                userData?.showUser?.avatar?.Location ||
+                getAvatar(userData?.showUser?.username || "")
               }
               alt="profile"
               className="object-cover w-24 h-24 rounded-full md:w-28 md:h-28 lg:w-32 lg:h-32"
@@ -32,7 +32,7 @@ export default function ShowProfileInfo({
           <div className="w-full ml-2 md:ml-4">
             <div className="flex items-center w-full">
               <p className="w-full text-xl sm:text-2xl">
-                {userData?.me?.username}
+                {userData?.showUser?.username}
               </p>
             </div>
           </div>
@@ -40,13 +40,13 @@ export default function ShowProfileInfo({
             <div>
               <p className="mb-2 text-sm sm:text-base">도전 문제</p>
               <p className="text-xl text-center text-gray-500">
-                {userData?.me?.totalTries}
+                {userData?.showUser?.totalTries}
               </p>
             </div>
             <div className="ml-2 sm:ml-8">
               <p className="mb-2 text-sm sm:text-base">맞춘 문제</p>
               <p className="text-xl text-center text-gray-500">
-                {userData?.me?.totalConquests}
+                {userData?.showUser?.totalConquests}
               </p>
             </div>
           </div>

@@ -28,6 +28,8 @@ export interface showQuizs_showQuizs {
   quizHashtags: showQuizs_showQuizs_quizHashtags[] | null;
   answerRate: number;
   totalLikes: number;
+  isTried: boolean;
+  isWinner: boolean;
 }
 
 export interface showQuizs {

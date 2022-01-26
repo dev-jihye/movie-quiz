@@ -33,6 +33,7 @@ export interface ShowQuizFragment {
   type: string;
   image: any | null;
   isMine: boolean;
+  isTried: boolean;
   answer: string;
   nextTry: number | null;
   isWinner: boolean;

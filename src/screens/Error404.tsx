@@ -22,7 +22,7 @@ export default function Error404({ url = "/" }) {
                 <button>
                   <Link
                     to={url}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#ef7676] focus:outline-none focus:ring-2 focus:ring-offset-2 "
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#f56363] hover:opacity-100 opacity-80"
                   >
                     홈으로 가기
                   </Link>

@@ -49,7 +49,7 @@ export default function UserQuizTry({ quizs, fetchMore }: IuserQuizTry) {
   }, [handleObserver]);
 
   return (
-    <div className="grid gap-4 pb-4 lg:grid-cols-3 ">
+    <div className="grid gap-4 pb-4 sm:grid-cols-2 md:grid-cols-3">
       {quizs?.length === 0 && <p>도전 문제가 없습니다.</p>}
       {quizs?.map((post, index) => {
         let bgIndex = 0;

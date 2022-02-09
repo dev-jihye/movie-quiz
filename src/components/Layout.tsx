@@ -15,18 +15,18 @@ export default function Layout({ children, loading }: ILayout) {
   return (
     <div>
       <Nav />
-      <div className="px-4 pt-12 pb-20 bg-white sm:px-6 lg:pt-16 lg:pb-28 lg:px-8">
-        <div className="relative max-w-lg mx-auto lg:max-w-4xl">
+      <div className="px-4 pt-12 pb-20 bg-white sm:px-16 lg:pt-16 lg:pb-28 lg:px-8">
+        <div className="relative max-w-lg mx-auto sm:max-w-4xl">
           {loading ? <Loading loading={loading} /> : children}
         </div>
         {location.pathname === "/" && (
           <Link
             to={ROUTE.CREATE_QUIZ}
-            className="fixed hidden sm:block bottom-5 right-5"
+            className="fixed hidden right-2 sm:block bottom-2 md:bottom-5 md:right-5 "
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-10 h-10 opacity-80 hover:opacity-100"
+              className="w-12 h-12 opacity-80 hover:opacity-100"
               viewBox="0 0 20 20"
               fill="#f56363"
             >

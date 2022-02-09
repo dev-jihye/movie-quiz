@@ -84,7 +84,7 @@ export default function QuizList() {
   }, []);
 
   return loading ? null : (
-    <div className="grid gap-4 pb-4 lg:grid-cols-3 ">
+    <div className="grid gap-4 pb-4 sm:grid-cols-2 md:grid-cols-3 ">
       {data?.showQuizs?.map((post, index) => {
         let bgIndex = 0;
         if (index > bgColors.length - 1) {

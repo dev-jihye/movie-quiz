@@ -20,6 +20,10 @@
 ## Features
 * 영화 퀴즈 만들기
 * 영화 퀴즈 풀기
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/59763645/166967834-43dde108-d42f-42cd-9bd8-47d2694d2c72.gif)
+
 * 프로필 설정
+![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/59763645/166967857-d3fca475-24c0-495e-9331-a6518c01fe1e.gif)
+
 * 댓글 기능
 * 좋아요

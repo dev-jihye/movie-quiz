@@ -8,6 +8,7 @@
 
 ## ⭐️ About The Project
 유저끼리 영화에 대한 퀴즈를 내고 맞추는 영화퀴즈 사이트입니다.
+
 <br>
 
 ## 🛠 Built with
@@ -16,6 +17,7 @@
 * [Apollo Client](https://www.apollographql.com/docs/react/)
 * [React Router](https://reactrouter.com/)
 * [tailwindcss](https://tailwindcss.com/)
+
 <br>
 
 ## Features

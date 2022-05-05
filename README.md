@@ -24,7 +24,7 @@
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/59763645/166967834-43dde108-d42f-42cd-9bd8-47d2694d2c72.gif)
 <br>
 * 프로필 설정<br>
-![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/59763645/166967857-d3fca475-24c0-495e-9331-a6518c01fe1e.gif)
+![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/59763645/166968152-69e255ac-e0f6-41d4-9e9e-1d28f33cb894.gif)
 <br>
 * 댓글 기능
 * 좋아요

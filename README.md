@@ -19,7 +19,12 @@
 <br>
 
 ## Features
-* 영화 퀴즈 만들기
+* 영화 퀴즈 만들기<br>
+
+![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/59763645/166970467-4f7b79e9-b14f-4aa2-8941-20a96132b6d5.gif)
+
+<br>
+
 * 영화 퀴즈 풀기<br>
 
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/59763645/166967834-43dde108-d42f-42cd-9bd8-47d2694d2c72.gif)
